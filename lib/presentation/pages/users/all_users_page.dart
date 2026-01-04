@@ -1,0 +1,1101 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import '../../../domain/entities/user_detail.dart';
+import '../../../domain/usecases/user/get_all_users_usecase.dart';
+import '../../../domain/usecases/user/get_user_detail_usecase.dart';
+import '../../../domain/usecases/user/delete_user_usecase.dart';
+import '../../../domain/usecases/user/deposit_money_usecase.dart';
+import '../../../domain/usecases/user/withdraw_money_usecase.dart';
+import '../../../domain/usecases/user/get_transaction_history_usecase.dart';
+import '../../controllers/user/all_users_controller.dart';
+import '../../widgets/layout/app_scaffold.dart';
+import '../../widgets/layout/breadcrumb.dart';
+
+class AllUsersPage extends StatelessWidget {
+  const AllUsersPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppScaffold(
+      title: 'All Users',
+      currentRoute: '/users',
+      breadcrumbs: [
+        BreadcrumbItem(label: 'Dashboard', route: '/dashboard'),
+        BreadcrumbItem(label: 'All Users', route: '/users'),
+      ],
+      child: GetBuilder<AllUsersController>(
+        init: AllUsersController(
+          getAllUsersUsecase: Get.find<GetAllUsersUsecase>(),
+          getUserDetailUsecase: Get.find<GetUserDetailUsecase>(),
+          deleteUserUsecase: Get.find<DeleteUserUsecase>(),
+          depositMoneyUsecase: Get.find<DepositMoneyUsecase>(),
+          withdrawMoneyUsecase: Get.find<WithdrawMoneyUsecase>(),
+          getTransactionHistoryUsecase: Get.find<GetTransactionHistoryUsecase>(),
+        ),
+        builder: (controller) {
+          return Column(
+            children: [
+              // Page Header
+              _buildPageHeader(context, controller),
+              
+              // Master-Detail Layout
+              Expanded(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Left Panel - User List (40%)
+                    Expanded(
+                      flex: 2,
+                      child: _buildUserListPanel(context, controller),
+                    ),
+                    
+                    // Right Panel - User Detail (60%)
+                    Expanded(
+                      flex: 3,
+                      child: _buildUserDetailPanel(context, controller),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildPageHeader(BuildContext context, AllUsersController controller) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        border: Border(
+          bottom: BorderSide(color: Colors.grey[300]!),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'All Users',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              const SizedBox(height: 4),
+              Obx(() {
+                final stats = controller.statistics.value;
+                if (stats != null) {
+                  return Text(
+                    'Total: ${stats.total} users (${stats.approved} Approved, ${stats.pending} Pending, ${stats.rejected} Rejected)',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.grey[600],
+                        ),
+                  );
+                }
+                return const SizedBox.shrink();
+              }),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserListPanel(BuildContext context, AllUsersController controller) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        border: Border(
+          right: BorderSide(color: Colors.grey[300]!),
+        ),
+      ),
+      child: Column(
+        children: [
+          // Toolbar
+          _buildListToolbar(context, controller),
+          
+          // User List
+          Expanded(
+            child: Obx(() {
+              if (controller.isLoading.value && controller.users.isEmpty) {
+                return _buildListLoadingState();
+              }
+              
+              if (controller.users.isEmpty) {
+                return _buildListEmptyState(context);
+              }
+              
+              return _buildUserList(context, controller);
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildListToolbar(BuildContext context, AllUsersController controller) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.grey[300]!),
+        ),
+      ),
+      child: Column(
+        children: [
+          // Search Bar
+          TextField(
+            onChanged: controller.onSearchChanged,
+            decoration: InputDecoration(
+              hintText: 'Search users...',
+              prefixIcon: const Icon(Icons.search),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
+          ),
+          const SizedBox(height: 12),
+          
+          // Filter Tabs
+          Obx(() {
+            final stats = controller.statistics.value;
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _buildFilterTab(
+                    context,
+                    'All',
+                    stats?.total ?? 0,
+                    controller.selectedStatus.value == 'all',
+                    () => controller.onStatusFilterChanged('all'),
+                  ),
+                  _buildFilterTab(
+                    context,
+                    'Approved',
+                    stats?.approved ?? 0,
+                    controller.selectedStatus.value == 'approved',
+                    () => controller.onStatusFilterChanged('approved'),
+                  ),
+                  _buildFilterTab(
+                    context,
+                    'Pending',
+                    stats?.pending ?? 0,
+                    controller.selectedStatus.value == 'pending',
+                    () => controller.onStatusFilterChanged('pending'),
+                  ),
+                  _buildFilterTab(
+                    context,
+                    'Rejected',
+                    stats?.rejected ?? 0,
+                    controller.selectedStatus.value == 'rejected',
+                    () => controller.onStatusFilterChanged('rejected'),
+                  ),
+                ],
+              ),
+            );
+          }),
+          const SizedBox(height: 12),
+          
+          // Role and Sort Filters
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Obx(() => DropdownButton<String>(
+                        value: controller.selectedRole.value,
+                        items: const [
+                          DropdownMenuItem(value: 'all', child: Text('All Roles')),
+                          DropdownMenuItem(value: 'tenant', child: Text('Tenants')),
+                          DropdownMenuItem(value: 'owner', child: Text('Owners')),
+                        ],
+                        onChanged: controller.onRoleFilterChanged,
+                        underline: const SizedBox.shrink(),
+                        isExpanded: true,
+                      )),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Obx(() => DropdownButton<String>(
+                        value: controller.selectedSort.value,
+                        items: const [
+                          DropdownMenuItem(value: 'name_asc', child: Text('Name (A-Z)')),
+                          DropdownMenuItem(value: 'name_desc', child: Text('Name (Z-A)')),
+                          DropdownMenuItem(value: 'newest', child: Text('Newest')),
+                          DropdownMenuItem(value: 'oldest', child: Text('Oldest')),
+                        ],
+                        onChanged: controller.onSortChanged,
+                        underline: const SizedBox.shrink(),
+                        isExpanded: true,
+                      )),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterTab(
+    BuildContext context,
+    String label,
+    int count,
+    bool isSelected,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? Theme.of(context).colorScheme.primary
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary
+                : Colors.grey,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.black,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? Colors.white.withValues(alpha: 0.3)
+                    : Colors.grey[300],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                count.toString(),
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.black,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildListLoadingState() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: 10,
+      itemBuilder: (context, index) {
+        return Card(
+          margin: const EdgeInsets.only(bottom: 8),
+          child: ListTile(
+            leading: CircleAvatar(backgroundColor: Colors.grey[300]),
+            title: Container(
+              height: 16,
+              width: 150,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            subtitle: Container(
+              margin: const EdgeInsets.only(top: 8),
+              height: 12,
+              width: 100,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildListEmptyState(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.people_outline, size: 64, color: Colors.grey[400]),
+          const SizedBox(height: 16),
+          Text(
+            'No users found',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserList(BuildContext context, AllUsersController controller) {
+    return Obx(() {
+      return ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: controller.users.length + 1, // +1 for load more
+        itemBuilder: (context, index) {
+          if (index == controller.users.length) {
+            // Load more indicator
+            if (controller.pagination.value?.hasNextPage == true) {
+              return Center(
+                child: TextButton(
+                  onPressed: controller.loadMore,
+                  child: const Text('Load More'),
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          }
+
+          final user = controller.users[index];
+          final isSelected = controller.selectedUserId.value == user.id;
+
+          return Card(
+            margin: const EdgeInsets.only(bottom: 8),
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
+                : null,
+            child: InkWell(
+              onTap: () => controller.selectUser(user.id),
+              child: ListTile(
+                leading: CircleAvatar(
+                  radius: 24,
+                  backgroundImage: user.personalPhoto.isNotEmpty
+                      ? NetworkImage(user.personalPhoto)
+                      : null,
+                  child: user.personalPhoto.isEmpty
+                      ? const Icon(Icons.person)
+                      : null,
+                ),
+                title: Text(
+                  user.fullName,
+                  style: TextStyle(
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: user.role == 'tenant'
+                                ? Colors.blue.withValues(alpha: 0.1)
+                                : Colors.green.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            user.role.toUpperCase(),
+                            style: TextStyle(
+                              color: user.role == 'tenant' ? Colors.blue : Colors.green,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: _getStatusColor(user.status).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            user.status.toUpperCase(),
+                            style: TextStyle(
+                              color: _getStatusColor(user.status),
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      user.mobileNumber,
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    ),
+                    Text(
+                      DateFormat('MMM dd, yyyy').format(user.createdAt),
+                      style: TextStyle(fontSize: 11, color: Colors.grey[500]),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    });
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'approved':
+        return Colors.green;
+      case 'pending':
+        return Colors.orange;
+      case 'rejected':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  Widget _buildUserDetailPanel(BuildContext context, AllUsersController controller) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Obx(() {
+        if (controller.selectedUserId.value == null) {
+          return _buildNoSelectionState(context);
+        }
+
+        if (controller.isLoadingDetail.value) {
+          return _buildDetailLoadingState();
+        }
+
+        final detail = controller.userDetail.value;
+        if (detail == null) {
+          return _buildNoSelectionState(context);
+        }
+
+        return _buildUserDetail(context, controller, detail);
+      }),
+    );
+  }
+
+  Widget _buildNoSelectionState(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.person_outline, size: 80, color: Colors.grey[400]),
+          const SizedBox(height: 24),
+          Text(
+            'Select a user to view details',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Choose a user from the list',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Colors.grey[600],
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailLoadingState() {
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Widget _buildUserDetail(
+    BuildContext context,
+    AllUsersController controller,
+    UserDetail detail,
+  ) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Detail Header
+          _buildDetailHeader(context, detail),
+          const SizedBox(height: 32),
+          
+          // Personal Information
+          _buildSection(
+            context,
+            'Personal Information',
+            [
+              _buildInfoRow('Mobile Number', detail.mobileNumber),
+              if (detail.dateOfBirth != null)
+                _buildInfoRow(
+                  'Date of Birth',
+                  '${DateFormat('MMM dd, yyyy').format(detail.dateOfBirth!)} (${_calculateAge(detail.dateOfBirth!)} years old)',
+                ),
+              _buildInfoRow('Role', detail.role.toUpperCase()),
+              _buildInfoRow('Status', detail.status.toUpperCase()),
+              _buildInfoRow(
+                'Registration Date',
+                DateFormat('MMM dd, yyyy').format(detail.createdAt),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          
+          // ID Verification
+          if (detail.idPhoto != null)
+            _buildSection(
+              context,
+              'Identity Verification',
+              [
+                InkWell(
+                  onTap: () => _showImageDialog(context, detail.idPhoto!),
+                  child: Container(
+                    width: 200,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        detail.idPhoto!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Center(child: Icon(Icons.image_not_supported));
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          const SizedBox(height: 24),
+          
+          // Account Balance
+          _buildBalanceSection(context, controller, detail),
+          const SizedBox(height: 24),
+          
+          // Activity Summary
+          if (detail.activitySummary != null)
+            _buildActivitySection(context, detail),
+          const SizedBox(height: 24),
+          
+          // Account Actions
+          _buildActionsSection(context, controller, detail),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailHeader(BuildContext context, UserDetail detail) {
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 60,
+          backgroundImage: detail.personalPhoto != null && detail.personalPhoto!.isNotEmpty
+              ? NetworkImage(detail.personalPhoto!)
+              : null,
+          child: detail.personalPhoto == null || detail.personalPhoto!.isEmpty
+              ? const Icon(Icons.person, size: 60)
+              : null,
+        ),
+        const SizedBox(height: 16),
+        Text(
+          detail.fullName,
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: detail.role == 'tenant'
+                    ? Colors.blue.withValues(alpha: 0.1)
+                    : Colors.green.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                detail.role.toUpperCase(),
+                style: TextStyle(
+                  color: detail.role == 'tenant' ? Colors.blue : Colors.green,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: _getStatusColor(detail.status).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                detail.status.toUpperCase(),
+                style: TextStyle(
+                  color: _getStatusColor(detail.status),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Member since ${DateFormat('MMM yyyy').format(detail.createdAt)}',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.grey[600],
+              ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSection(BuildContext context, String title, List<Widget> children) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        const SizedBox(height: 16),
+        ...children,
+      ],
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 150,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBalanceSection(
+    BuildContext context,
+    AllUsersController controller,
+    UserDetail detail,
+  ) {
+    return _buildSection(
+      context,
+      'Account Balance',
+      [
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Current Balance',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'EGP ${detail.balance.toStringAsFixed(2)}',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  if (detail.role == 'tenant')
+                    ElevatedButton.icon(
+                      onPressed: () => _showDepositDialog(context, controller, detail),
+                      icon: const Icon(Icons.add),
+                      label: const Text('Add Money'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                      ),
+                    )
+                  else
+                    ElevatedButton.icon(
+                      onPressed: () => _showWithdrawDialog(context, controller, detail),
+                      icon: const Icon(Icons.remove),
+                      label: const Text('Withdraw'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () {
+                      // TODO: Show transaction history
+                      Get.snackbar('Info', 'Transaction history coming soon');
+                    },
+                    child: const Text('View Transaction History'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActivitySection(BuildContext context, UserDetail detail) {
+    final activity = detail.activitySummary!;
+    
+    return _buildSection(
+      context,
+      'Activity Summary',
+      [
+        if (detail.role == 'tenant') ...[
+          _buildInfoRow('Total Bookings', activity.totalBookings?.toString() ?? '0'),
+          _buildInfoRow('Active Bookings', activity.activeBookings?.toString() ?? '0'),
+          _buildInfoRow('Completed Bookings', activity.completedBookings?.toString() ?? '0'),
+          _buildInfoRow('Reviews Given', activity.reviewsGiven?.toString() ?? '0'),
+        ] else ...[
+          _buildInfoRow('Total Apartments', activity.totalApartments?.toString() ?? '0'),
+          _buildInfoRow('Active Apartments', activity.activeApartments?.toString() ?? '0'),
+          _buildInfoRow('Total Bookings Received', activity.totalBookingsReceived?.toString() ?? '0'),
+          if (activity.averageRating != null)
+            _buildInfoRow(
+              'Average Rating',
+              '⭐ ${activity.averageRating!.toStringAsFixed(1)}',
+            ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildActionsSection(
+    BuildContext context,
+    AllUsersController controller,
+    UserDetail detail,
+  ) {
+    return _buildSection(
+      context,
+      'Account Actions',
+      [
+        if (!detail.canDelete) ...[
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.orange.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.warning, color: Colors.orange),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'This user has ${detail.activeBookingsCount} active booking(s). Deletion is not allowed.',
+                    style: const TextStyle(color: Colors.orange),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+        Row(
+          children: [
+            OutlinedButton(
+              onPressed: () {
+                Get.snackbar('Info', 'View full profile coming soon');
+              },
+              child: const Text('View Full Profile'),
+            ),
+            const SizedBox(width: 8),
+            OutlinedButton(
+              onPressed: () {
+                Get.snackbar('Info', 'Send message coming soon');
+              },
+              child: const Text('Send Message'),
+            ),
+            const Spacer(),
+            ElevatedButton(
+              onPressed: detail.canDelete
+                  ? () => _showDeleteDialog(context, controller, detail)
+                  : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Delete User'),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  int _calculateAge(DateTime birthDate) {
+    final now = DateTime.now();
+    int age = now.year - birthDate.year;
+    if (now.month < birthDate.month ||
+        (now.month == birthDate.month && now.day < birthDate.day)) {
+      age--;
+    }
+    return age;
+  }
+
+  void _showImageDialog(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        child: InteractiveViewer(
+          child: Image.network(imageUrl),
+        ),
+      ),
+    );
+  }
+
+  void _showDepositDialog(
+    BuildContext context,
+    AllUsersController controller,
+    UserDetail detail,
+  ) {
+    final amountController = TextEditingController();
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Add Money'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('User: ${detail.fullName}'),
+            const SizedBox(height: 16),
+            TextField(
+              controller: amountController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Amount (EGP)',
+                border: OutlineInputBorder(),
+                prefixText: 'EGP ',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final amount = double.tryParse(amountController.text);
+              if (amount != null && amount > 0) {
+                Get.back();
+                controller.depositMoney(detail.id, amount);
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+            child: const Text('Add Money'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showWithdrawDialog(
+    BuildContext context,
+    AllUsersController controller,
+    UserDetail detail,
+  ) {
+    final amountController = TextEditingController();
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Withdraw Money'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('User: ${detail.fullName}'),
+            Text('Current Balance: EGP ${detail.balance.toStringAsFixed(2)}'),
+            const SizedBox(height: 16),
+            TextField(
+              controller: amountController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Amount (EGP)',
+                border: OutlineInputBorder(),
+                prefixText: 'EGP ',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final amount = double.tryParse(amountController.text);
+              if (amount != null && amount > 0 && amount <= detail.balance) {
+                Get.back();
+                controller.withdrawMoney(detail.id, amount);
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+            child: const Text('Withdraw'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteDialog(
+    BuildContext context,
+    AllUsersController controller,
+    UserDetail detail,
+  ) {
+    final confirmController = TextEditingController();
+    final canDelete = false.obs;
+    
+    confirmController.addListener(() {
+      canDelete.value = confirmController.text == 'DELETE';
+    });
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete User Account?'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundImage: detail.personalPhoto != null && detail.personalPhoto!.isNotEmpty
+                      ? NetworkImage(detail.personalPhoto!)
+                      : null,
+                  child: detail.personalPhoto == null || detail.personalPhoto!.isEmpty
+                      ? const Icon(Icons.person)
+                      : null,
+                ),
+                const SizedBox(width: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(detail.fullName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text(detail.role.toUpperCase()),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.red.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.warning, color: Colors.red),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'This action cannot be undone',
+                      style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text('All user data will be permanently deleted'),
+            const SizedBox(height: 16),
+            TextField(
+              controller: confirmController,
+              decoration: const InputDecoration(
+                labelText: 'Type DELETE to confirm',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Cancel'),
+          ),
+          Obx(() => ElevatedButton(
+                onPressed: canDelete.value
+                    ? () {
+                        Get.back();
+                        controller.deleteUser(detail.id);
+                      }
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Delete Permanently'),
+              )),
+        ],
+      ),
+    );
+  }
+}
