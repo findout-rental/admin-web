@@ -11,6 +11,7 @@ import '../../../domain/usecases/user/get_transaction_history_usecase.dart';
 import '../../controllers/user/all_users_controller.dart';
 import '../../widgets/layout/app_scaffold.dart';
 import '../../widgets/layout/breadcrumb.dart';
+import '../../widgets/panels/transaction_history_panel.dart';
 
 class AllUsersPage extends StatelessWidget {
   const AllUsersPage({super.key});
@@ -34,30 +35,64 @@ class AllUsersPage extends StatelessWidget {
           getTransactionHistoryUsecase: Get.find<GetTransactionHistoryUsecase>(),
         ),
         builder: (controller) {
-          return Column(
+          return Stack(
             children: [
-              // Page Header
-              _buildPageHeader(context, controller),
-              
-              // Master-Detail Layout
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Left Panel - User List (40%)
-                    Expanded(
-                      flex: 2,
-                      child: _buildUserListPanel(context, controller),
+              Column(
+                children: [
+                  // Page Header
+                  _buildPageHeader(context, controller),
+                  
+                  // Master-Detail Layout
+                  Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Left Panel - User List (40%)
+                        Expanded(
+                          flex: 2,
+                          child: _buildUserListPanel(context, controller),
+                        ),
+                        
+                        // Right Panel - User Detail (60%)
+                        Expanded(
+                          flex: 3,
+                          child: _buildUserDetailPanel(context, controller),
+                        ),
+                      ],
                     ),
-                    
-                    // Right Panel - User Detail (60%)
-                    Expanded(
-                      flex: 3,
-                      child: _buildUserDetailPanel(context, controller),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
+              
+              // Transaction History Panel (Slide-out from right)
+              Obx(() {
+                if (!controller.isTransactionHistoryPanelOpen.value ||
+                    controller.userDetail.value == null) {
+                  return const SizedBox.shrink();
+                }
+                
+                return Positioned(
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  child: GestureDetector(
+                    onTap: () => controller.closeTransactionHistoryPanel(),
+                    child: Container(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () {}, // Prevent closing when clicking panel
+                          child: TransactionHistoryPanel(
+                            userName: controller.userDetail.value!.fullName,
+                            currentBalance: controller.userDetail.value!.balance,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }),
             ],
           );
         },
@@ -782,8 +817,7 @@ class AllUsersPage extends StatelessWidget {
                   const SizedBox(height: 8),
                   TextButton(
                     onPressed: () {
-                      // TODO: Show transaction history
-                      Get.snackbar('Info', 'Transaction history coming soon');
+                      controller.openTransactionHistoryPanel();
                     },
                     child: const Text('View Transaction History'),
                   ),

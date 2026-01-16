@@ -46,6 +46,12 @@ class AllUsersController extends GetxController {
   final isLoadingDetail = false.obs;
   final userDetail = Rxn<UserDetail>();
   final transactionHistory = <Map<String, dynamic>>[].obs;
+  
+  // Transaction History Panel State
+  final isTransactionHistoryPanelOpen = false.obs;
+  final isLoadingTransactionHistory = false.obs;
+  final selectedTransactionType = 'all'.obs; // 'all', 'deposit', 'withdrawal', 'rent_payment', 'refund', 'cancellation_fee'
+  final selectedDateRange = 'all'.obs; // 'all', 'month', 'last_month', '3months'
 
   @override
   void onInit() {
@@ -105,12 +111,90 @@ class AllUsersController extends GetxController {
   }
 
   Future<void> loadTransactionHistory(int userId) async {
+    isLoadingTransactionHistory.value = true;
     try {
       final transactions = await getTransactionHistoryUsecase.execute(userId);
       transactionHistory.value = transactions;
     } catch (e) {
       // Silently fail - transaction history is optional
+      transactionHistory.value = [];
+    } finally {
+      isLoadingTransactionHistory.value = false;
     }
+  }
+  
+  void openTransactionHistoryPanel() {
+    isTransactionHistoryPanelOpen.value = true;
+  }
+  
+  void closeTransactionHistoryPanel() {
+    isTransactionHistoryPanelOpen.value = false;
+  }
+  
+  void onTransactionTypeFilterChanged(String? type) {
+    if (type != null) {
+      selectedTransactionType.value = type;
+    }
+  }
+  
+  void onDateRangeFilterChanged(String? range) {
+    if (range != null) {
+      selectedDateRange.value = range;
+    }
+  }
+  
+  List<Map<String, dynamic>> get filteredTransactionHistory {
+    var filtered = List<Map<String, dynamic>>.from(transactionHistory);
+    
+    // Filter by type
+    if (selectedTransactionType.value != 'all') {
+      filtered = filtered.where((t) => t['type'] == selectedTransactionType.value).toList();
+    }
+    
+    // Filter by date range
+    if (selectedDateRange.value != 'all') {
+      final now = DateTime.now();
+      DateTime startDate;
+      
+      switch (selectedDateRange.value) {
+        case 'month':
+          startDate = DateTime(now.year, now.month, 1);
+          break;
+        case 'last_month':
+          startDate = DateTime(now.year, now.month - 1, 1);
+          break;
+        case '3months':
+          startDate = now.subtract(const Duration(days: 90));
+          break;
+        default:
+          startDate = DateTime(1970);
+      }
+      
+      filtered = filtered.where((t) {
+        final createdAt = t['created_at'] as String?;
+        if (createdAt == null) return false;
+        try {
+          final date = DateTime.parse(createdAt);
+          return date.isAfter(startDate);
+        } catch (e) {
+          return false;
+        }
+      }).toList();
+    }
+    
+    // Sort by date (newest first)
+    filtered.sort((a, b) {
+      final dateA = a['created_at'] as String?;
+      final dateB = b['created_at'] as String?;
+      if (dateA == null || dateB == null) return 0;
+      try {
+        return DateTime.parse(dateB).compareTo(DateTime.parse(dateA));
+      } catch (e) {
+        return 0;
+      }
+    });
+    
+    return filtered;
   }
 
   void onSearchChanged(String query) {
