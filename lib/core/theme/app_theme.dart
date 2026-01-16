@@ -42,20 +42,62 @@ class AppTheme {
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
-      seedColor: AppColors.primary,
+      seedColor: const Color(0xFF1565C0), // Darker blue for dark theme
       brightness: Brightness.dark,
+    ).copyWith(
+      primary: const Color(0xFF1565C0), // Darker blue
+      secondary: const Color(0xFF1976D2), // Slightly lighter blue for secondary
+      surface: const Color(0xFF1E1E1E), // Dark surface
+      onSurface: Colors.white,
+      onPrimary: Colors.white,
     ),
     scaffoldBackgroundColor: AppColors.backgroundDark,
     appBarTheme: const AppBarTheme(
       elevation: 0,
       centerTitle: false,
-      backgroundColor: AppColors.surfaceDark,
+      backgroundColor: Color(0xFF1E1E1E), // Dark surface color
       foregroundColor: Colors.white,
     ),
     cardTheme: CardThemeData(
       elevation: 2,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
+      ),
+      color: const Color(0xFF1E1E1E), // Dark card background
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: const Color(0xFF1E1E1E), // Dark input background
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(
+          color: Colors.grey[700]!,
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(
+          color: Colors.grey[700]!,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(
+          color: Color(0xFF1565C0), // Darker blue for focus
+          width: 2,
+        ),
+      ),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFF1565C0), // Darker blue for buttons
+        foregroundColor: Colors.white,
+        elevation: 2,
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: const Color(0xFF64B5F6), // Lighter blue for text buttons in dark mode
       ),
     ),
   );
