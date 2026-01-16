@@ -6,5 +6,7 @@ abstract class AuthRepository {
   Future<User> getCurrentUser();
   bool isAuthenticated();
   String? getToken();
+  Future<void> forgotPassword(String mobileNumber);
+  Future<void> resetPassword(String token, String newPassword);
 }
 

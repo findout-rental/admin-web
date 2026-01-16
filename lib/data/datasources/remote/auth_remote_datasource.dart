@@ -5,6 +5,8 @@ abstract class AuthRemoteDatasource {
   Future<Map<String, dynamic>> login(String mobileNumber, String password);
   Future<void> logout();
   Future<Map<String, dynamic>> getCurrentUser();
+  Future<void> forgotPassword(String mobileNumber);
+  Future<void> resetPassword(String token, String newPassword);
 }
 
 class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
@@ -33,6 +35,25 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   Future<Map<String, dynamic>> getCurrentUser() async {
     final response = await apiClient.get(ApiConstants.me);
     return response.data as Map<String, dynamic>;
+  }
+
+  @override
+  Future<void> forgotPassword(String mobileNumber) async {
+    await apiClient.post(
+      ApiConstants.forgotPassword,
+      data: {'mobile_number': mobileNumber},
+    );
+  }
+
+  @override
+  Future<void> resetPassword(String token, String newPassword) async {
+    await apiClient.post(
+      ApiConstants.resetPassword,
+      data: {
+        'token': token,
+        'password': newPassword,
+      },
+    );
   }
 }
 

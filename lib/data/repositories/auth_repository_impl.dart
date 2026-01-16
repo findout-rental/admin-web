@@ -87,5 +87,23 @@ class AuthRepositoryImpl implements AuthRepository {
   String? getToken() {
     return localDatasource.getToken();
   }
+
+  @override
+  Future<void> forgotPassword(String mobileNumber) async {
+    try {
+      await remoteDatasource.forgotPassword(mobileNumber);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> resetPassword(String token, String newPassword) async {
+    try {
+      await remoteDatasource.resetPassword(token, newPassword);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
 
