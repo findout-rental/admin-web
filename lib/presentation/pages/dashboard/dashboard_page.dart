@@ -12,7 +12,7 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Dashboard',
+      title: 'dashboard'.tr,
       currentRoute: '/dashboard',
       child: GetBuilder<DashboardController>(
         init: DashboardController(Get.find<GetStatisticsUsecase>()),
@@ -55,14 +55,14 @@ class DashboardPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Dashboard',
+          'dashboard'.tr,
           style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
         ),
         const SizedBox(height: 8),
         Text(
-          'Overview of your platform',
+          'dashboard_overview'.tr,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: Colors.grey[600],
               ),
@@ -73,7 +73,7 @@ class DashboardPage extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(
-                'Last updated: ${DateFormat('MMM dd, yyyy - HH:mm').format(lastUpdated)}',
+                '${'last_updated'.tr}: ${DateFormat('MMM dd, yyyy - HH:mm').format(lastUpdated)}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.grey[500],
                     ),
@@ -147,9 +147,9 @@ class DashboardPage extends StatelessWidget {
         // Total Users Card
         StatCard(
           icon: Icons.people,
-          title: 'Total Users',
+          title: 'total_users'.tr,
           value: _formatNumber(controller.totalUsers.value),
-          subtitle: '${_formatNumber(controller.totalTenants.value)} Tenants | ${_formatNumber(controller.totalOwners.value)} Owners',
+          subtitle: '${_formatNumber(controller.totalTenants.value)} ${'tenants'.tr} | ${_formatNumber(controller.totalOwners.value)} ${'owners'.tr}',
           iconColor: Colors.blue,
           onTap: () => Get.toNamed('/users'),
         ),
@@ -157,9 +157,9 @@ class DashboardPage extends StatelessWidget {
         // Total Apartments Card
         StatCard(
           icon: Icons.apartment,
-          title: 'Total Apartments',
+          title: 'total_apartments'.tr,
           value: _formatNumber(controller.totalApartments.value),
-          subtitle: '${_formatNumber(controller.activeApartments.value)} Active | ${_formatNumber(controller.inactiveApartments.value)} Inactive',
+          subtitle: '${_formatNumber(controller.activeApartments.value)} ${'active'.tr} | ${_formatNumber(controller.inactiveApartments.value)} ${'inactive'.tr}',
           iconColor: Colors.green,
           onTap: () => Get.toNamed('/apartments'),
         ),
@@ -167,7 +167,7 @@ class DashboardPage extends StatelessWidget {
         // Pending Registrations Card
         StatCard(
           icon: Icons.pending_actions,
-          title: 'Pending Registrations',
+          title: 'pending_registrations'.tr,
           value: _formatNumber(controller.pendingRegistrations.value),
           iconColor: Colors.orange,
           action: controller.pendingRegistrations.value > 0
@@ -177,9 +177,9 @@ class DashboardPage extends StatelessWidget {
                     color: Colors.orange,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Text(
-                    'Action Required',
-                    style: TextStyle(
+                  child: Text(
+                    'action_required'.tr,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
@@ -193,9 +193,9 @@ class DashboardPage extends StatelessWidget {
         // Total Bookings Card
         StatCard(
           icon: Icons.calendar_today,
-          title: 'Total Bookings',
+          title: 'total_bookings'.tr,
           value: _formatNumber(controller.totalBookings.value),
-          subtitle: '${_formatNumber(controller.activeBookings.value)} Active | ${_formatNumber(controller.completedBookings.value)} Completed',
+          subtitle: '${_formatNumber(controller.activeBookings.value)} ${'active'.tr} | ${_formatNumber(controller.completedBookings.value)} ${'completed'.tr}',
           iconColor: Colors.purple,
           onTap: () => Get.toNamed('/bookings'),
         ),
@@ -208,7 +208,7 @@ class DashboardPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Quick Actions',
+          'quick_actions'.tr,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -220,28 +220,28 @@ class DashboardPage extends StatelessWidget {
           children: [
             _buildQuickActionButton(
               context,
-              'Review Pending Registrations',
+              'review_pending_registrations'.tr,
               Icons.pending_actions,
               Colors.orange,
               () => Get.toNamed('/pending-registrations'),
             ),
             _buildQuickActionButton(
               context,
-              'View All Users',
+              'view_all_users'.tr,
               Icons.people,
               Colors.blue,
               () => Get.toNamed('/users'),
             ),
             _buildQuickActionButton(
               context,
-              'View All Apartments',
+              'view_all_apartments'.tr,
               Icons.apartment,
               Colors.green,
               () => Get.toNamed('/apartments'),
             ),
             _buildQuickActionButton(
               context,
-              'View All Bookings',
+              'view_all_bookings'.tr,
               Icons.calendar_today,
               Colors.purple,
               () => Get.toNamed('/bookings'),

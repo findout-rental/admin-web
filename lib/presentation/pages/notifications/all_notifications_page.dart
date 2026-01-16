@@ -13,7 +13,7 @@ class AllNotificationsPage extends StatelessWidget {
     return GetBuilder<NotificationController>(
       builder: (controller) {
         return AppScaffold(
-          title: 'All Notifications',
+          title: 'all_notifications'.tr,
           child: Column(
             children: [
               // Header with Actions
@@ -28,7 +28,7 @@ class AllNotificationsPage extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      'Notifications',
+                      'notifications'.tr,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -39,7 +39,7 @@ class AllNotificationsPage extends StatelessWidget {
                         return TextButton.icon(
                           onPressed: controller.markAllAsRead,
                           icon: const Icon(Icons.done_all, size: 18),
-                          label: Text('Mark All as Read (${controller.unreadCount.value})'),
+                          label: Text('${'mark_all_read'.tr} (${controller.unreadCount.value})'),
                         );
                       }
                       return const SizedBox.shrink();
@@ -62,7 +62,7 @@ class AllNotificationsPage extends StatelessWidget {
                     Expanded(
                       child: TextField(
                         decoration: InputDecoration(
-                          hintText: 'Search notifications...',
+                          hintText: 'search_notifications'.tr,
                           prefixIcon: const Icon(Icons.search),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -81,7 +81,7 @@ class AllNotificationsPage extends StatelessWidget {
                     Obx(() {
                       return FilterChip(
                         selected: false,
-                        label: const Text('Unread Only'),
+                        label: Text('unread_only'.tr),
                         onSelected: (selected) {
                           // TODO: Implement filter
                         },
@@ -106,14 +106,14 @@ class AllNotificationsPage extends StatelessWidget {
                           Icon(Icons.notifications_none, size: 64, color: Colors.grey[400]),
                           const SizedBox(height: 16),
                           Text(
-                            'No notifications',
+                            'no_notifications'.tr,
                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                   color: Colors.grey[600],
                                 ),
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'You\'re all caught up!',
+                            'all_caught_up'.tr,
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   color: Colors.grey[500],
                                 ),
@@ -240,7 +240,7 @@ class AllNotificationsPage extends StatelessWidget {
                         Icon(Icons.link, size: 14, color: Colors.grey[500]),
                         const SizedBox(width: 4),
                         Text(
-                          'Related to booking',
+                          'related_to_booking'.tr,
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.blue[600],
@@ -258,7 +258,7 @@ class AllNotificationsPage extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.check_circle_outline),
                 onPressed: () => controller.markAsRead(notification.id),
-                tooltip: 'Mark as read',
+                tooltip: 'mark_as_read'.tr,
                 color: Colors.grey[600],
               ),
           ],

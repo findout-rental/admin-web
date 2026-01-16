@@ -15,12 +15,12 @@ class PendingRegistrationsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Pending Registrations',
+      title: 'pending_registrations'.tr,
       currentRoute: '/pending-registrations',
       breadcrumbs: [
-        BreadcrumbItem(label: 'Dashboard', route: '/dashboard'),
+        BreadcrumbItem(label: 'dashboard'.tr, route: '/dashboard'),
         BreadcrumbItem(
-            label: 'Pending Registrations', route: '/pending-registrations'),
+            label: 'pending_registrations'.tr, route: '/pending-registrations'),
       ],
       child: GetBuilder<PendingRegistrationsController>(
         init: PendingRegistrationsController(
@@ -71,7 +71,7 @@ class PendingRegistrationsPage extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Pending Registrations',
+                'pending_registrations'.tr,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                       letterSpacing: -0.5,
@@ -117,7 +117,7 @@ class PendingRegistrationsPage extends StatelessWidget {
           TextField(
             onChanged: controller.onSearchChanged,
             decoration: InputDecoration(
-              hintText: 'Search by name or mobile number...',
+              hintText: 'search_by_name_or_mobile'.tr,
               prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -149,13 +149,13 @@ class PendingRegistrationsPage extends StatelessWidget {
                   ),
                   child: Obx(() => DropdownButton<String>(
                         value: controller.selectedRole.value,
-                        items: const [
+                        items: [
                           DropdownMenuItem(
-                              value: 'all', child: Text('All Roles')),
+                              value: 'all', child: Text('all_roles'.tr)),
                           DropdownMenuItem(
-                              value: 'tenant', child: Text('Tenants')),
+                              value: 'tenant', child: Text('tenants'.tr)),
                           DropdownMenuItem(
-                              value: 'owner', child: Text('Owners')),
+                              value: 'owner', child: Text('owners'.tr)),
                         ],
                         onChanged: controller.onRoleFilterChanged,
                         underline: const SizedBox.shrink(),
@@ -179,13 +179,13 @@ class PendingRegistrationsPage extends StatelessWidget {
                   ),
                   child: Obx(() => DropdownButton<String>(
                         value: controller.selectedSort.value,
-                        items: const [
+                        items: [
                           DropdownMenuItem(
-                              value: 'newest', child: Text('Newest First')),
+                              value: 'newest', child: Text('newest_first'.tr)),
                           DropdownMenuItem(
-                              value: 'oldest', child: Text('Oldest First')),
+                              value: 'oldest', child: Text('oldest_first'.tr)),
                           DropdownMenuItem(
-                              value: 'name', child: Text('Name (A-Z)')),
+                              value: 'name', child: Text('name_az'.tr)),
                         ],
                         onChanged: controller.onSortChanged,
                         underline: const SizedBox.shrink(),
@@ -209,7 +209,7 @@ class PendingRegistrationsPage extends StatelessWidget {
                         : Icon(Icons.refresh, color: Colors.grey[700]),
                     onPressed:
                         controller.isLoading.value ? null : controller.refresh,
-                    tooltip: 'Refresh',
+                    tooltip: 'refresh'.tr,
                     style: IconButton.styleFrom(
                       backgroundColor: Colors.grey[100],
                       padding: const EdgeInsets.all(10),
@@ -269,14 +269,14 @@ class PendingRegistrationsPage extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           Text(
-            'All caught up!',
+            'all_caught_up'.tr,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
           ),
           const SizedBox(height: 8),
           Text(
-            'There are no pending registration requests at this time',
+            'no_pending_registrations'.tr,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Colors.grey[600],
                 ),
@@ -412,9 +412,9 @@ class PendingRegistrationsPage extends StatelessWidget {
                   color: Colors.orange.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: const Text(
-                  'PENDING',
-                  style: TextStyle(
+                child: Text(
+                  'pending'.tr,
+                  style: const TextStyle(
                     color: Colors.orange,
                     fontWeight: FontWeight.w600,
                     fontSize: 11,
@@ -433,7 +433,7 @@ class PendingRegistrationsPage extends StatelessWidget {
                   icon: Icon(Icons.check_circle,
                       color: Colors.green[600], size: 22),
                   onPressed: () => _showApproveDialog(context, controller, reg),
-                  tooltip: 'Quick Approve',
+                  tooltip: 'quick_approve'.tr,
                   style: IconButton.styleFrom(
                     backgroundColor: Colors.green[50],
                     padding: const EdgeInsets.all(8),
@@ -443,7 +443,7 @@ class PendingRegistrationsPage extends StatelessWidget {
                 IconButton(
                   icon: Icon(Icons.cancel, color: Colors.red[600], size: 22),
                   onPressed: () => _showRejectDialog(context, controller, reg),
-                  tooltip: 'Quick Reject',
+                  tooltip: 'quick_reject'.tr,
                   style: IconButton.styleFrom(
                     backgroundColor: Colors.red[50],
                     padding: const EdgeInsets.all(8),
@@ -480,7 +480,7 @@ class PendingRegistrationsPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Showing ${((pagination.currentPage - 1) * pagination.perPage) + 1}-${(pagination.currentPage * pagination.perPage).clamp(0, pagination.totalItems)} of ${pagination.totalItems}',
+            '${'showing'.tr} ${((pagination.currentPage - 1) * pagination.perPage) + 1}-${(pagination.currentPage * pagination.perPage).clamp(0, pagination.totalItems)} ${'of'.tr} ${pagination.totalItems}',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           Row(
@@ -541,22 +541,22 @@ class PendingRegistrationsPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Approve Registration?'),
+        title: Text('approve_registration'.tr),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Name: ${registration.fullName}'),
-            Text('Role: ${registration.role.toUpperCase()}'),
-            Text('Mobile: ${registration.mobileNumber}'),
+            Text('${'name'.tr}: ${registration.fullName}'),
+            Text('${'role'.tr}: ${registration.role.toUpperCase()}'),
+            Text('${'mobile'.tr}: ${registration.mobileNumber}'),
             const SizedBox(height: 16),
-            const Text('The user will be notified and can access the app.'),
+            Text('user_will_be_notified_and_access'.tr),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () {
@@ -567,7 +567,7 @@ class PendingRegistrationsPage extends StatelessWidget {
               backgroundColor: Colors.green,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Approve'),
+            child: Text('approve'.tr),
           ),
         ],
       ),
@@ -584,36 +584,36 @@ class PendingRegistrationsPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Reject Registration?'),
+        title: Text('reject_registration'.tr),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Name: ${registration.fullName}'),
-            Text('Role: ${registration.role.toUpperCase()}'),
-            Text('Mobile: ${registration.mobileNumber}'),
+            Text('${'name'.tr}: ${registration.fullName}'),
+            Text('${'role'.tr}: ${registration.role.toUpperCase()}'),
+            Text('${'mobile'.tr}: ${registration.mobileNumber}'),
             const SizedBox(height: 16),
             TextField(
               controller: reasonController,
-              decoration: const InputDecoration(
-                labelText: 'Reason for rejection (optional but recommended)',
-                hintText: 'Enter reason...',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: 'reason_for_rejection'.tr,
+                hintText: 'enter_reason'.tr,
+                border: const OutlineInputBorder(),
               ),
               maxLines: 3,
               maxLength: 500,
             ),
             const SizedBox(height: 8),
-            const Text(
-              'The user will be notified.',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+            Text(
+              'user_will_be_notified'.tr,
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () {
@@ -629,7 +629,7 @@ class PendingRegistrationsPage extends StatelessWidget {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Reject'),
+            child: Text('reject'.tr),
           ),
         ],
       ),

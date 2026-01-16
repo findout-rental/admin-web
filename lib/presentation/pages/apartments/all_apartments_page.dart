@@ -15,11 +15,11 @@ class AllApartmentsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'All Apartments',
+      title: 'all_apartments'.tr,
       currentRoute: '/apartments',
       breadcrumbs: [
-        BreadcrumbItem(label: 'Dashboard', route: '/dashboard'),
-        BreadcrumbItem(label: 'All Apartments', route: '/apartments'),
+        BreadcrumbItem(label: 'dashboard'.tr, route: '/dashboard'),
+        BreadcrumbItem(label: 'all_apartments'.tr, route: '/apartments'),
       ],
       child: GetBuilder<AllApartmentsController>(
         init: AllApartmentsController(
@@ -92,7 +92,7 @@ class AllApartmentsPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'All Apartments',
+                'all_apartments'.tr,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -106,7 +106,7 @@ class AllApartmentsPage extends StatelessWidget {
                     .where((a) => a.status == 'inactive')
                     .length;
                 return Text(
-                  'Total: $total apartments ($active Active, $inactive Inactive)',
+                  '${'total_apartments_count'.tr}: $total ${'apartments'.tr.toLowerCase()} ($active ${'active'.tr}, $inactive ${'inactive'.tr})',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.grey[600],
                       ),
@@ -135,7 +135,7 @@ class AllApartmentsPage extends StatelessWidget {
           TextField(
             onChanged: controller.onSearchChanged,
             decoration: InputDecoration(
-              hintText: 'Search by address or owner name...',
+              hintText: 'search_by_address_or_owner'.tr,
               prefixIcon: const Icon(Icons.search),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -159,13 +159,13 @@ class AllApartmentsPage extends StatelessWidget {
                   ),
                   child: Obx(() => DropdownButton<String>(
                         value: controller.selectedStatus.value,
-                        items: const [
+                        items: [
                           DropdownMenuItem(
-                              value: 'all', child: Text('All Status')),
+                              value: 'all', child: Text('all_status'.tr)),
                           DropdownMenuItem(
-                              value: 'active', child: Text('Active')),
+                              value: 'active', child: Text('active'.tr)),
                           DropdownMenuItem(
-                              value: 'inactive', child: Text('Inactive')),
+                              value: 'inactive', child: Text('inactive'.tr)),
                         ],
                         onChanged: controller.onStatusFilterChanged,
                         underline: const SizedBox.shrink(),
@@ -200,11 +200,11 @@ class AllApartmentsPage extends StatelessWidget {
                       value: controller.selectedGovernorate.value.isEmpty
                           ? null
                           : controller.selectedGovernorate.value,
-                      hint: const Text('All Governorates'),
+                      hint: Text('all_governorates'.tr),
                       items: [
-                        const DropdownMenuItem<String>(
+                        DropdownMenuItem<String>(
                           value: '',
-                          child: Text('All Governorates'),
+                          child: Text('all_governorates'.tr),
                         ),
                         ...controller.governorates.map((gov) {
                           return DropdownMenuItem<String>(
@@ -236,7 +236,7 @@ class AllApartmentsPage extends StatelessWidget {
                     if (controller.selectedGovernorate.value.isEmpty) {
                       return DropdownButton<String>(
                         value: null,
-                        hint: const Text('Select Governorate First'),
+                        hint: Text('select_governorate_first'.tr),
                         items: const [],
                         onChanged: null,
                         underline: const SizedBox.shrink(),
@@ -260,11 +260,11 @@ class AllApartmentsPage extends StatelessWidget {
                       value: controller.selectedCity.value.isEmpty
                           ? null
                           : controller.selectedCity.value,
-                      hint: const Text('All Cities'),
+                      hint: Text('all_cities'.tr),
                       items: [
-                        const DropdownMenuItem<String>(
+                        DropdownMenuItem<String>(
                           value: '',
-                          child: Text('All Cities'),
+                          child: Text('all_cities'.tr),
                         ),
                         ...controller.cities.map((city) {
                           return DropdownMenuItem<String>(
@@ -293,19 +293,19 @@ class AllApartmentsPage extends StatelessWidget {
                   ),
                   child: Obx(() => DropdownButton<String>(
                         value: controller.selectedSort.value,
-                        items: const [
+                        items: [
                           DropdownMenuItem(
-                              value: 'newest', child: Text('Newest')),
+                              value: 'newest', child: Text('newest'.tr)),
                           DropdownMenuItem(
-                              value: 'oldest', child: Text('Oldest')),
+                              value: 'oldest', child: Text('oldest'.tr)),
                           DropdownMenuItem(
                               value: 'price_low',
-                              child: Text('Price (Low to High)')),
+                              child: Text('price_low_to_high'.tr)),
                           DropdownMenuItem(
                               value: 'price_high',
-                              child: Text('Price (High to Low)')),
+                              child: Text('price_high_to_low'.tr)),
                           DropdownMenuItem(
-                              value: 'rating', child: Text('Rating')),
+                              value: 'rating', child: Text('rating'.tr)),
                         ],
                         onChanged: controller.onSortChanged,
                         underline: const SizedBox.shrink(),
@@ -326,7 +326,7 @@ class AllApartmentsPage extends StatelessWidget {
                         : const Icon(Icons.refresh),
                     onPressed:
                         controller.isLoading.value ? null : controller.refresh,
-                    tooltip: 'Refresh',
+                    tooltip: 'refresh'.tr,
                   )),
             ],
           ),
@@ -382,14 +382,14 @@ class AllApartmentsPage extends StatelessWidget {
           Icon(Icons.apartment_outlined, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 24),
           Text(
-            'No apartments in the system',
+            'no_apartments'.tr,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Apartments will appear here once owners add listings',
+            'apartments_will_appear'.tr,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Colors.grey[600],
                 ),
@@ -409,17 +409,17 @@ class AllApartmentsPage extends StatelessWidget {
             child: Card(
               child: Obx(() {
                 return DataTable(
-                  columns: const [
-                    DataColumn(label: Text('Photo')),
-                    DataColumn(label: Text('Address')),
-                    DataColumn(label: Text('Owner')),
-                    DataColumn(label: Text('Location')),
-                    DataColumn(label: Text('Price')),
-                    DataColumn(label: Text('Status')),
-                    DataColumn(label: Text('Rating')),
-                    DataColumn(label: Text('Bookings')),
-                    DataColumn(label: Text('Created')),
-                    DataColumn(label: Text('Actions')),
+                  columns: [
+                    DataColumn(label: Text('photo'.tr)),
+                    DataColumn(label: Text('address'.tr)),
+                    DataColumn(label: Text('owner'.tr)),
+                    DataColumn(label: Text('location'.tr)),
+                    DataColumn(label: Text('price'.tr)),
+                    DataColumn(label: Text('status'.tr)),
+                    DataColumn(label: Text('rating'.tr)),
+                    DataColumn(label: Text('bookings'.tr)),
+                    DataColumn(label: Text('created'.tr)),
+                    DataColumn(label: Text('actions'.tr)),
                   ],
                   rows: controller.apartments.map((apartment) {
                     return DataRow(
@@ -540,7 +540,7 @@ class AllApartmentsPage extends StatelessWidget {
                           TextButton(
                             onPressed: () =>
                                 controller.viewApartmentDetail(apartment.id),
-                            child: const Text('View Details'),
+                            child: Text('view_details'.tr),
                           ),
                         ),
                       ],
@@ -575,7 +575,7 @@ class AllApartmentsPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Showing ${((pagination.currentPage - 1) * pagination.perPage) + 1}-${(pagination.currentPage * pagination.perPage).clamp(0, pagination.totalItems)} of ${pagination.totalItems}',
+            '${'showing'.tr} ${((pagination.currentPage - 1) * pagination.perPage) + 1}-${(pagination.currentPage * pagination.perPage).clamp(0, pagination.totalItems)} ${'of'.tr} ${pagination.totalItems}',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           Row(
@@ -645,7 +645,7 @@ class AllApartmentsPage extends StatelessWidget {
 
         final detail = controller.apartmentDetail.value;
         if (detail == null) {
-          return const Center(child: Text('No details available'));
+          return Center(child: Text('no_details_available'.tr));
         }
 
         return Column(
@@ -662,7 +662,7 @@ class AllApartmentsPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Apartment Details',
+                    'apartment_details'.tr,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -758,7 +758,7 @@ class AllApartmentsPage extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Owner',
+                    'owner'.tr,
                     style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                 ],
@@ -805,7 +805,7 @@ class AllApartmentsPage extends StatelessWidget {
             'Total Bookings', apartment['total_bookings']?.toString() ?? '0'),
         if (apartment['average_rating'] != null)
           _buildInfoRow(
-            'Average Rating',
+            'average_rating'.tr,
             '⭐ ${(apartment['average_rating'] as num).toStringAsFixed(1)}',
           ),
         _buildInfoRow(
@@ -829,7 +829,7 @@ class AllApartmentsPage extends StatelessWidget {
                 Get.toNamed('/users');
               }
             },
-            child: const Text('View Owner Profile'),
+            child: Text('view_owner_profile'.tr),
           ),
         ),
       ],

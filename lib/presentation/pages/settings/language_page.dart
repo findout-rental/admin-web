@@ -11,12 +11,12 @@ class LanguagePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Language Settings',
+      title: 'language_settings'.tr,
       currentRoute: '/settings/language',
       breadcrumbs: [
-        BreadcrumbItem(label: 'Dashboard', route: '/dashboard'),
-        BreadcrumbItem(label: 'Settings', route: '/settings/profile'),
-        BreadcrumbItem(label: 'Language', route: '/settings/language'),
+        BreadcrumbItem(label: 'dashboard'.tr, route: '/dashboard'),
+        BreadcrumbItem(label: 'settings'.tr, route: '/settings/profile'),
+        BreadcrumbItem(label: 'language'.tr, route: '/settings/language'),
       ],
       child: GetBuilder<LanguageController>(
         init: LanguageController(
@@ -30,14 +30,14 @@ class LanguagePage extends StatelessWidget {
               children: [
                 // Page Header
                 Text(
-                  'Language Settings',
+                  'language_settings'.tr,
                   style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Select your preferred language for the admin panel',
+                  'select_preferred_language'.tr,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: Colors.grey[600],
                       ),
@@ -62,8 +62,8 @@ class LanguagePage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             ListTile(
-                              title: const Text('English'),
-                              subtitle: const Text('English (United States)'),
+                              title: Text('english'.tr),
+                              subtitle: Text('english_us'.tr),
                               leading: const Radio<String>(
                                 value: 'en',
                               ),
@@ -73,8 +73,8 @@ class LanguagePage extends StatelessWidget {
                             ),
                             const Divider(),
                             ListTile(
-                              title: const Text('العربية'),
-                              subtitle: const Text('Arabic (العربية)'),
+                              title: Text('arabic'.tr),
+                              subtitle: Text('arabic_lang'.tr),
                               leading: const Radio<String>(
                                 value: 'ar',
                               ),
@@ -109,9 +109,9 @@ class LanguagePage extends StatelessWidget {
                                 child:
                                     CircularProgressIndicator(strokeWidth: 2),
                               )
-                            : const Text(
-                                'Apply Language',
-                                style: TextStyle(fontSize: 16),
+                            : Text(
+                                'apply_language'.tr,
+                                style: const TextStyle(fontSize: 16),
                               ),
                       ),
                     )),

@@ -26,7 +26,7 @@ class LoginPage extends StatelessWidget {
               const SizedBox(height: 8),
               ElevatedButton(
                 onPressed: () => Get.offAllNamed('/login'),
-                child: const Text('Retry'),
+                child: Text('retry'.tr),
               ),
             ],
           ),

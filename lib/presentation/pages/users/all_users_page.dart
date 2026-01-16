@@ -19,11 +19,11 @@ class AllUsersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'All Users',
+      title: 'all_users'.tr,
       currentRoute: '/users',
       breadcrumbs: [
-        BreadcrumbItem(label: 'Dashboard', route: '/dashboard'),
-        BreadcrumbItem(label: 'All Users', route: '/users'),
+        BreadcrumbItem(label: 'dashboard'.tr, route: '/dashboard'),
+        BreadcrumbItem(label: 'all_users'.tr, route: '/users'),
       ],
       child: GetBuilder<AllUsersController>(
         init: AllUsersController(
@@ -117,7 +117,7 @@ class AllUsersPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'All Users',
+                'all_users'.tr,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -127,7 +127,7 @@ class AllUsersPage extends StatelessWidget {
                 final stats = controller.statistics.value;
                 if (stats != null) {
                   return Text(
-                    'Total: ${stats.total} users (${stats.approved} Approved, ${stats.pending} Pending, ${stats.rejected} Rejected)',
+                    '${'total_apartments_count'.tr}: ${stats.total} ${'users'.tr.toLowerCase()} (${stats.approved} ${'approved'.tr}, ${stats.pending} ${'pending'.tr}, ${stats.rejected} ${'rejected'.tr})',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Colors.grey[600],
                         ),
@@ -207,28 +207,28 @@ class AllUsersPage extends StatelessWidget {
                 children: [
                   _buildFilterTab(
                     context,
-                    'All',
+                    'all'.tr,
                     stats?.total ?? 0,
                     controller.selectedStatus.value == 'all',
                     () => controller.onStatusFilterChanged('all'),
                   ),
                   _buildFilterTab(
                     context,
-                    'Approved',
+                    'approved'.tr,
                     stats?.approved ?? 0,
                     controller.selectedStatus.value == 'approved',
                     () => controller.onStatusFilterChanged('approved'),
                   ),
                   _buildFilterTab(
                     context,
-                    'Pending',
+                    'pending'.tr,
                     stats?.pending ?? 0,
                     controller.selectedStatus.value == 'pending',
                     () => controller.onStatusFilterChanged('pending'),
                   ),
                   _buildFilterTab(
                     context,
-                    'Rejected',
+                    'rejected'.tr,
                     stats?.rejected ?? 0,
                     controller.selectedStatus.value == 'rejected',
                     () => controller.onStatusFilterChanged('rejected'),
@@ -251,10 +251,10 @@ class AllUsersPage extends StatelessWidget {
                   ),
                   child: Obx(() => DropdownButton<String>(
                         value: controller.selectedRole.value,
-                        items: const [
-                          DropdownMenuItem(value: 'all', child: Text('All Roles')),
-                          DropdownMenuItem(value: 'tenant', child: Text('Tenants')),
-                          DropdownMenuItem(value: 'owner', child: Text('Owners')),
+                        items: [
+                          DropdownMenuItem(value: 'all', child: Text('all_roles'.tr)),
+                          DropdownMenuItem(value: 'tenant', child: Text('tenants'.tr)),
+                          DropdownMenuItem(value: 'owner', child: Text('owners'.tr)),
                         ],
                         onChanged: controller.onRoleFilterChanged,
                         underline: const SizedBox.shrink(),
@@ -272,11 +272,11 @@ class AllUsersPage extends StatelessWidget {
                   ),
                   child: Obx(() => DropdownButton<String>(
                         value: controller.selectedSort.value,
-                        items: const [
-                          DropdownMenuItem(value: 'name_asc', child: Text('Name (A-Z)')),
-                          DropdownMenuItem(value: 'name_desc', child: Text('Name (Z-A)')),
-                          DropdownMenuItem(value: 'newest', child: Text('Newest')),
-                          DropdownMenuItem(value: 'oldest', child: Text('Oldest')),
+                        items: [
+                          DropdownMenuItem(value: 'name_asc', child: Text('name_az'.tr)),
+                          DropdownMenuItem(value: 'name_desc', child: Text('name_za'.tr)),
+                          DropdownMenuItem(value: 'newest', child: Text('newest'.tr)),
+                          DropdownMenuItem(value: 'oldest', child: Text('oldest'.tr)),
                         ],
                         onChanged: controller.onSortChanged,
                         underline: const SizedBox.shrink(),
@@ -408,7 +408,7 @@ class AllUsersPage extends StatelessWidget {
               return Center(
                 child: TextButton(
                   onPressed: controller.loadMore,
-                  child: const Text('Load More'),
+                  child: Text('load_more'.tr),
                 ),
               );
             }
@@ -798,7 +798,7 @@ class AllUsersPage extends StatelessWidget {
                     ElevatedButton.icon(
                       onPressed: () => _showDepositDialog(context, controller, detail),
                       icon: const Icon(Icons.add),
-                      label: const Text('Add Money'),
+                      label: Text('add_money'.tr),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
@@ -808,7 +808,7 @@ class AllUsersPage extends StatelessWidget {
                     ElevatedButton.icon(
                       onPressed: () => _showWithdrawDialog(context, controller, detail),
                       icon: const Icon(Icons.remove),
-                      label: const Text('Withdraw'),
+                      label: Text('withdraw'.tr),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
                         foregroundColor: Colors.white,
@@ -819,7 +819,7 @@ class AllUsersPage extends StatelessWidget {
                     onPressed: () {
                       controller.openTransactionHistoryPanel();
                     },
-                    child: const Text('View Transaction History'),
+                    child: Text('view_transaction_history'.tr),
                   ),
                 ],
               ),
@@ -891,16 +891,16 @@ class AllUsersPage extends StatelessWidget {
           children: [
             OutlinedButton(
               onPressed: () {
-                Get.snackbar('Info', 'View full profile coming soon');
+                Get.snackbar('info'.tr, 'view_full_profile_coming_soon'.tr);
               },
-              child: const Text('View Full Profile'),
+              child: Text('view_full_profile'.tr),
             ),
             const SizedBox(width: 8),
             OutlinedButton(
               onPressed: () {
-                Get.snackbar('Info', 'Send message coming soon');
+                Get.snackbar('info'.tr, 'send_message_coming_soon'.tr);
               },
-              child: const Text('Send Message'),
+              child: Text('send_message'.tr),
             ),
             const Spacer(),
             ElevatedButton(
@@ -911,7 +911,7 @@ class AllUsersPage extends StatelessWidget {
                 backgroundColor: Colors.red,
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Delete User'),
+              child: Text('delete_user'.tr),
             ),
           ],
         ),
@@ -950,18 +950,18 @@ class AllUsersPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Add Money'),
+        title: Text('add_money'.tr),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('User: ${detail.fullName}'),
+            Text('${'user_label'.tr}: ${detail.fullName}'),
             const SizedBox(height: 16),
             TextField(
               controller: amountController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Amount (EGP)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: 'amount_egp'.tr,
+                border: const OutlineInputBorder(),
                 prefixText: 'EGP ',
               ),
             ),
@@ -970,7 +970,7 @@ class AllUsersPage extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () {
@@ -981,7 +981,7 @@ class AllUsersPage extends StatelessWidget {
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-            child: const Text('Add Money'),
+            child: Text('add_money'.tr),
           ),
         ],
       ),
@@ -998,19 +998,19 @@ class AllUsersPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Withdraw Money'),
+        title: Text('withdraw_money'.tr),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('User: ${detail.fullName}'),
-            Text('Current Balance: EGP ${detail.balance.toStringAsFixed(2)}'),
+            Text('${'user_label'.tr}: ${detail.fullName}'),
+            Text('${'current_balance'.tr}: EGP ${detail.balance.toStringAsFixed(2)}'),
             const SizedBox(height: 16),
             TextField(
               controller: amountController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Amount (EGP)',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: 'amount_egp'.tr,
+                border: const OutlineInputBorder(),
                 prefixText: 'EGP ',
               ),
             ),
@@ -1019,7 +1019,7 @@ class AllUsersPage extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () {
@@ -1030,7 +1030,7 @@ class AllUsersPage extends StatelessWidget {
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-            child: const Text('Withdraw'),
+            child: Text('withdraw'.tr),
           ),
         ],
       ),
@@ -1052,7 +1052,7 @@ class AllUsersPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete User Account?'),
+        title: Text('delete_user_account'.tr),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1085,27 +1085,27 @@ class AllUsersPage extends StatelessWidget {
                 color: Colors.red.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.warning, color: Colors.red),
-                  SizedBox(width: 8),
+                  const Icon(Icons.warning, color: Colors.red),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'This action cannot be undone',
-                      style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                      'this_action_cannot_be_undone'.tr,
+                      style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 16),
-            const Text('All user data will be permanently deleted'),
+            Text('all_user_data_deleted'.tr),
             const SizedBox(height: 16),
             TextField(
               controller: confirmController,
-              decoration: const InputDecoration(
-                labelText: 'Type DELETE to confirm',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: 'type_delete_to_confirm'.tr,
+                border: const OutlineInputBorder(),
               ),
             ),
           ],
@@ -1113,7 +1113,7 @@ class AllUsersPage extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr),
           ),
           Obx(() => ElevatedButton(
                 onPressed: canDelete.value
@@ -1126,7 +1126,7 @@ class AllUsersPage extends StatelessWidget {
                   backgroundColor: Colors.red,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Delete Permanently'),
+                child: Text('delete_permanently'.tr),
               )),
         ],
       ),

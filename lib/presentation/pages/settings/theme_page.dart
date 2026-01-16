@@ -11,12 +11,12 @@ class ThemePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Theme Settings',
+      title: 'theme_settings'.tr,
       currentRoute: '/settings/theme',
       breadcrumbs: [
-        BreadcrumbItem(label: 'Dashboard', route: '/dashboard'),
-        BreadcrumbItem(label: 'Settings', route: '/settings/profile'),
-        BreadcrumbItem(label: 'Theme', route: '/settings/theme'),
+        BreadcrumbItem(label: 'dashboard'.tr, route: '/dashboard'),
+        BreadcrumbItem(label: 'settings'.tr, route: '/settings/profile'),
+        BreadcrumbItem(label: 'theme'.tr, route: '/settings/theme'),
       ],
       child: GetBuilder<ThemeController>(
         init: ThemeController(),
@@ -28,14 +28,14 @@ class ThemePage extends StatelessWidget {
               children: [
                 // Page Header
                 Text(
-                  'Theme Settings',
+                  'theme_settings'.tr,
                   style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Choose your preferred theme',
+                  'choose_preferred_theme'.tr,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: Colors.grey[600],
                       ),
@@ -59,8 +59,8 @@ class ThemePage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             ListTile(
-                              title: const Text('Light Mode'),
-                              subtitle: const Text('Classic bright theme'),
+                              title: Text('light_mode'.tr),
+                              subtitle: Text('classic_bright_theme'.tr),
                               leading: const Radio<String>(
                                 value: 'light',
                               ),
@@ -79,9 +79,8 @@ class ThemePage extends StatelessWidget {
                             ),
                             const Divider(),
                             ListTile(
-                              title: const Text('Dark Mode'),
-                              subtitle: const Text(
-                                  'Easy on the eyes, reduces eye strain'),
+                              title: Text('dark_mode'.tr),
+                              subtitle: Text('easy_on_eyes'.tr),
                               leading: const Radio<String>(
                                 value: 'dark',
                               ),
@@ -114,7 +113,7 @@ class ThemePage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Live Preview',
+                          'live_preview'.tr,
                           style:
                               Theme.of(context).textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.bold,
@@ -139,9 +138,9 @@ class ThemePage extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
-                        child: const Text(
-                          'Apply Theme',
-                          style: TextStyle(fontSize: 16),
+                        child: Text(
+                          'apply_theme'.tr,
+                          style: const TextStyle(fontSize: 16),
                         ),
                       ),
                     )),

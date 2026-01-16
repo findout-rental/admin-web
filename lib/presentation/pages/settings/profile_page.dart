@@ -15,12 +15,12 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Profile Settings',
+      title: 'profile_settings'.tr,
       currentRoute: '/settings/profile',
       breadcrumbs: [
-        BreadcrumbItem(label: 'Dashboard', route: '/dashboard'),
-        BreadcrumbItem(label: 'Settings', route: '/settings/profile'),
-        BreadcrumbItem(label: 'Profile', route: '/settings/profile'),
+        BreadcrumbItem(label: 'dashboard'.tr, route: '/dashboard'),
+        BreadcrumbItem(label: 'settings'.tr, route: '/settings/profile'),
+        BreadcrumbItem(label: 'profile'.tr, route: '/settings/profile'),
       ],
       child: GetBuilder<ProfileController>(
         init: ProfileController(
@@ -41,14 +41,14 @@ class ProfilePage extends StatelessWidget {
                 children: [
                   // Page Header
                   Text(
-                    'Profile Settings',
+                    'profile_settings'.tr,
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Manage your profile information',
+                    'manage_profile_info'.tr,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: Colors.grey[600],
                         ),
@@ -85,7 +85,7 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              'Profile Photo',
+              'profile_photo'.tr,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -125,7 +125,7 @@ class ProfilePage extends StatelessWidget {
                     child: IconButton(
                       icon: const Icon(Icons.camera_alt, color: Colors.white),
                       onPressed: controller.pickImage,
-                      tooltip: 'Change Photo',
+                      tooltip: 'change_photo'.tr,
                     ),
                   ),
                 ),
@@ -137,7 +137,7 @@ class ProfilePage extends StatelessWidget {
                   ? const CircularProgressIndicator()
                   : ElevatedButton(
                       onPressed: controller.uploadPhoto,
-                      child: const Text('Upload Photo'),
+                      child: Text('upload_photo'.tr),
                     )),
           ],
         ),
@@ -154,7 +154,7 @@ class ProfilePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Personal Information',
+              'personal_information'.tr,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -162,17 +162,17 @@ class ProfilePage extends StatelessWidget {
             const SizedBox(height: 24),
             TextField(
               controller: controller.firstNameController,
-              decoration: const InputDecoration(
-                labelText: 'First Name',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: 'first_name'.tr,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: controller.lastNameController,
-              decoration: const InputDecoration(
-                labelText: 'Last Name',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: 'last_name'.tr,
+                border: const OutlineInputBorder(),
               ),
             ),
           ],
@@ -194,7 +194,7 @@ class ProfilePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Account Information',
+                  'account_information'.tr,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -202,28 +202,28 @@ class ProfilePage extends StatelessWidget {
                 const SizedBox(height: 24),
                 _buildInfoRow(
                   context,
-                  'Email',
+                  'email'.tr,
                   user.mobileNumber, // Using mobile number as email equivalent
                   isReadOnly: true,
                 ),
                 const SizedBox(height: 8),
                 _buildInfoRow(
                   context,
-                  'Role',
+                  'role'.tr,
                   user.role.toUpperCase(),
                   isReadOnly: true,
                 ),
                 const SizedBox(height: 8),
                 _buildInfoRow(
                   context,
-                  'Account Created',
+                  'account_created'.tr,
                   DateFormat('MMM dd, yyyy').format(user.createdAt),
                   isReadOnly: true,
                 ),
                 if (user.mobileNumber.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   Text(
-                    'Note: Contact super admin to change email',
+                    'note_contact_admin'.tr,
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey[600],
@@ -279,7 +279,7 @@ class ProfilePage extends StatelessWidget {
               onPressed: controller.hasChanges()
                   ? controller.cancelChanges
                   : null,
-              child: const Text('Cancel'),
+              child: Text('cancel'.tr),
             )),
         const SizedBox(width: 16),
         Obx(() => ElevatedButton(
@@ -292,7 +292,7 @@ class ProfilePage extends StatelessWidget {
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Save Changes'),
+                  : Text('save_changes'.tr),
             )),
       ],
     );

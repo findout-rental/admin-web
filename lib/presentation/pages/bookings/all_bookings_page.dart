@@ -14,11 +14,11 @@ class AllBookingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'All Bookings',
+      title: 'all_bookings'.tr,
       currentRoute: '/bookings',
       breadcrumbs: [
-        BreadcrumbItem(label: 'Dashboard', route: '/dashboard'),
-        BreadcrumbItem(label: 'All Bookings', route: '/bookings'),
+        BreadcrumbItem(label: 'dashboard'.tr, route: '/dashboard'),
+        BreadcrumbItem(label: 'all_bookings'.tr, route: '/bookings'),
       ],
       child: GetBuilder<AllBookingsController>(
         init: AllBookingsController(
@@ -76,7 +76,7 @@ class AllBookingsPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'All Bookings',
+                'all_bookings'.tr,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                       letterSpacing: -0.5,
@@ -172,11 +172,11 @@ class AllBookingsPage extends StatelessWidget {
                 ),
                 child: Obx(() => DropdownButton<String>(
                       value: controller.selectedSort.value,
-                      items: const [
-                        DropdownMenuItem(value: 'newest', child: Text('Newest')),
-                        DropdownMenuItem(value: 'oldest', child: Text('Oldest')),
-                        DropdownMenuItem(value: 'check_in', child: Text('Check-in')),
-                        DropdownMenuItem(value: 'check_out', child: Text('Check-out')),
+                      items: [
+                        DropdownMenuItem(value: 'newest', child: Text('newest'.tr)),
+                        DropdownMenuItem(value: 'oldest', child: Text('oldest'.tr)),
+                        DropdownMenuItem(value: 'check_in', child: Text('check_in'.tr)),
+                        DropdownMenuItem(value: 'check_out', child: Text('check_out'.tr)),
                       ],
                       onChanged: controller.onSortChanged,
                       underline: const SizedBox.shrink(),
@@ -537,7 +537,7 @@ class AllBookingsPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Showing ${((pagination.currentPage - 1) * pagination.perPage) + 1}-${(pagination.currentPage * pagination.perPage).clamp(0, pagination.totalItems)} of ${pagination.totalItems}',
+            '${'showing'.tr} ${((pagination.currentPage - 1) * pagination.perPage) + 1}-${(pagination.currentPage * pagination.perPage).clamp(0, pagination.totalItems)} ${'of'.tr} ${pagination.totalItems}',
             style: TextStyle(fontSize: 13, color: Colors.grey[600]),
           ),
           Row(
@@ -609,7 +609,7 @@ class AllBookingsPage extends StatelessWidget {
         }
         final detail = controller.bookingDetail.value;
         if (detail == null) {
-          return const Center(child: Text('No details available'));
+          return Center(child: Text('no_details_available'.tr));
         }
         return Column(
           children: [
@@ -736,7 +736,7 @@ class AllBookingsPage extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Total Price', style: TextStyle(fontWeight: FontWeight.w600)),
+              Text('total_price'.tr, style: const TextStyle(fontWeight: FontWeight.w600)),
               Text(
                 'EGP ${booking['total_price'] != null ? (booking['total_price'] as num).toStringAsFixed(2) : '0.00'}',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
