@@ -180,8 +180,8 @@ class AllApartmentsPage extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    border: Border.all(color: Colors.grey[300]!),
+                    color: Theme.of(context).inputDecorationTheme.fillColor ?? Theme.of(context).cardColor,
+                    border: Border.all(color: Theme.of(context).dividerColor),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Obx(() {
@@ -215,7 +215,7 @@ class AllApartmentsPage extends StatelessWidget {
                       ],
                       onChanged: controller.onGovernorateChanged,
                       underline: const SizedBox.shrink(),
-                      icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey[600]),
+                        icon: Icon(Icons.keyboard_arrow_down, color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6)),
                       isExpanded: true,
                     );
                   }),
@@ -228,8 +228,8 @@ class AllApartmentsPage extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    border: Border.all(color: Colors.grey[300]!),
+                    color: Theme.of(context).inputDecorationTheme.fillColor ?? Theme.of(context).cardColor,
+                    border: Border.all(color: Theme.of(context).dividerColor),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Obx(() {
@@ -275,7 +275,7 @@ class AllApartmentsPage extends StatelessWidget {
                       ],
                       onChanged: controller.onCityChanged,
                       underline: const SizedBox.shrink(),
-                      icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey[600]),
+                        icon: Icon(Icons.keyboard_arrow_down, color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6)),
                       isExpanded: true,
                     );
                   }),
@@ -479,7 +479,7 @@ class AllApartmentsPage extends StatelessWidget {
                         DataCell(
                           apartment.price != null
                               ? Text(
-                                  'EGP ${apartment.price!.toStringAsFixed(0)}/${apartment.pricePeriod ?? 'period'}',
+                                  'SYP ${apartment.price!.toStringAsFixed(0)}/${apartment.pricePeriod ?? 'period'}',
                                 )
                               : const Text('N/A'),
                         ),
@@ -575,7 +575,16 @@ class AllApartmentsPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            '${'showing'.tr} ${((pagination.currentPage - 1) * pagination.perPage) + 1}-${(pagination.currentPage * pagination.perPage).clamp(0, pagination.totalItems)} ${'of'.tr} ${pagination.totalItems}',
+            () {
+              final apartmentsCount = controller.apartments.length;
+              final start = pagination.totalItems == 0
+                  ? 0
+                  : ((pagination.currentPage - 1) * pagination.perPage) + 1;
+              final end = pagination.totalItems == 0
+                  ? 0
+                  : ((pagination.currentPage - 1) * pagination.perPage + apartmentsCount).clamp(0, pagination.totalItems);
+              return '${'showing'.tr} $start-$end ${'of'.tr} ${pagination.totalItems}';
+            }(),
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           Row(
@@ -771,7 +780,7 @@ class AllApartmentsPage extends StatelessWidget {
         // Price and Specifications
         if (apartment['price'] != null) ...[
           Text(
-            'EGP ${apartment['price']}',
+            'SYP ${apartment['price']}',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.primary,

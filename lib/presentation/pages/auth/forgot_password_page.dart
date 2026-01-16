@@ -72,7 +72,7 @@ class ForgotPasswordPage extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [
             Theme.of(context).colorScheme.primary,
-            Theme.of(context).colorScheme.primary.withOpacity(0.8),
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
           ],
         ),
       ),
@@ -82,7 +82,7 @@ class ForgotPasswordPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 Icons.lock_reset,
                 size: 120,
                 color: Colors.white,
@@ -245,7 +245,7 @@ class ForgotPasswordPage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Icon(
+        const Icon(
           Icons.check_circle,
           size: 80,
           color: Colors.green,

@@ -79,27 +79,50 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<void> depositMoney(int userId, double amount) async {
+  Future<void> depositMoney(int userId, double amount, {String? description}) async {
     try {
-      await remoteDatasource.depositMoney(userId, amount);
+      await remoteDatasource.depositMoney(userId, amount, description: description);
     } catch (e) {
       rethrow;
     }
   }
 
   @override
-  Future<void> withdrawMoney(int userId, double amount) async {
+  Future<void> withdrawMoney(int userId, double amount, {String? description}) async {
     try {
-      await remoteDatasource.withdrawMoney(userId, amount);
+      await remoteDatasource.withdrawMoney(userId, amount, description: description);
     } catch (e) {
       rethrow;
     }
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getTransactionHistory(int userId) async {
+  Future<double> getUserBalance(int userId) async {
     try {
-      return await remoteDatasource.getTransactionHistory(userId);
+      return await remoteDatasource.getUserBalance(userId);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getTransactionHistory(
+    int userId, {
+    String? type,
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    String? sort,
+    int? perPage,
+  }) async {
+    try {
+      return await remoteDatasource.getTransactionHistory(
+        userId,
+        type: type,
+        dateFrom: dateFrom,
+        dateTo: dateTo,
+        sort: sort,
+        perPage: perPage,
+      );
     } catch (e) {
       rethrow;
     }

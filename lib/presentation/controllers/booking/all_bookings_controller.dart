@@ -56,8 +56,8 @@ class AllBookingsController extends GetxController {
       pagination.value = result.pagination;
     } catch (e) {
       Get.snackbar(
-        'Error',
-        'Unable to load bookings. Please try again.',
+        'error'.tr,
+        'unable_to_load_bookings'.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -74,8 +74,8 @@ class AllBookingsController extends GetxController {
       bookingDetail.value = detail;
     } catch (e) {
       Get.snackbar(
-        'Error',
-        'Unable to load booking details.',
+        'error'.tr,
+        'unable_to_load_booking_details'.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {

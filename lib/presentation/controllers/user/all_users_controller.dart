@@ -110,10 +110,45 @@ class AllUsersController extends GetxController {
     }
   }
 
-  Future<void> loadTransactionHistory(int userId) async {
+  Future<void> loadTransactionHistory(int userId, {bool reload = false}) async {
+    if (!reload && transactionHistory.isNotEmpty) {
+      // Use cached data if available and not reloading
+      return;
+    }
+    
     isLoadingTransactionHistory.value = true;
     try {
-      final transactions = await getTransactionHistoryUsecase.execute(userId);
+      // Calculate date range
+      DateTime? dateFrom;
+      DateTime? dateTo;
+      
+      if (selectedDateRange.value != 'all') {
+        final now = DateTime.now();
+        switch (selectedDateRange.value) {
+          case 'month':
+            dateFrom = DateTime(now.year, now.month, 1);
+            dateTo = now;
+            break;
+          case 'last_month':
+            final lastMonth = DateTime(now.year, now.month - 1, 1);
+            dateFrom = lastMonth;
+            dateTo = DateTime(now.year, now.month, 0);
+            break;
+          case '3months':
+            dateFrom = now.subtract(const Duration(days: 90));
+            dateTo = now;
+            break;
+        }
+      }
+      
+      final transactions = await getTransactionHistoryUsecase.execute(
+        userId,
+        type: selectedTransactionType.value != 'all' ? selectedTransactionType.value : null,
+        dateFrom: dateFrom,
+        dateTo: dateTo,
+        sort: 'newest',
+        perPage: 100,
+      );
       transactionHistory.value = transactions;
     } catch (e) {
       // Silently fail - transaction history is optional
@@ -134,67 +169,27 @@ class AllUsersController extends GetxController {
   void onTransactionTypeFilterChanged(String? type) {
     if (type != null) {
       selectedTransactionType.value = type;
+      // Reload transaction history with new filter
+      if (selectedUserId.value != null) {
+        loadTransactionHistory(selectedUserId.value!, reload: true);
+      }
     }
   }
   
   void onDateRangeFilterChanged(String? range) {
     if (range != null) {
       selectedDateRange.value = range;
+      // Reload transaction history with new filter
+      if (selectedUserId.value != null) {
+        loadTransactionHistory(selectedUserId.value!, reload: true);
+      }
     }
   }
   
+  // Transaction history is now filtered on the server side
+  // This getter just returns the cached data
   List<Map<String, dynamic>> get filteredTransactionHistory {
-    var filtered = List<Map<String, dynamic>>.from(transactionHistory);
-    
-    // Filter by type
-    if (selectedTransactionType.value != 'all') {
-      filtered = filtered.where((t) => t['type'] == selectedTransactionType.value).toList();
-    }
-    
-    // Filter by date range
-    if (selectedDateRange.value != 'all') {
-      final now = DateTime.now();
-      DateTime startDate;
-      
-      switch (selectedDateRange.value) {
-        case 'month':
-          startDate = DateTime(now.year, now.month, 1);
-          break;
-        case 'last_month':
-          startDate = DateTime(now.year, now.month - 1, 1);
-          break;
-        case '3months':
-          startDate = now.subtract(const Duration(days: 90));
-          break;
-        default:
-          startDate = DateTime(1970);
-      }
-      
-      filtered = filtered.where((t) {
-        final createdAt = t['created_at'] as String?;
-        if (createdAt == null) return false;
-        try {
-          final date = DateTime.parse(createdAt);
-          return date.isAfter(startDate);
-        } catch (e) {
-          return false;
-        }
-      }).toList();
-    }
-    
-    // Sort by date (newest first)
-    filtered.sort((a, b) {
-      final dateA = a['created_at'] as String?;
-      final dateB = b['created_at'] as String?;
-      if (dateA == null || dateB == null) return 0;
-      try {
-        return DateTime.parse(dateB).compareTo(DateTime.parse(dateA));
-      } catch (e) {
-        return 0;
-      }
-    });
-    
-    return filtered;
+    return transactionHistory;
   }
 
   void onSearchChanged(String query) {
@@ -262,9 +257,9 @@ class AllUsersController extends GetxController {
     }
   }
 
-  Future<void> depositMoney(int userId, double amount) async {
+  Future<void> depositMoney(int userId, double amount, {String? description}) async {
     try {
-      await depositMoneyUsecase.execute(userId, amount);
+      await depositMoneyUsecase.execute(userId, amount, description: description);
       Get.snackbar(
         'Success',
         'Money deposited successfully',
@@ -285,9 +280,9 @@ class AllUsersController extends GetxController {
     }
   }
 
-  Future<void> withdrawMoney(int userId, double amount) async {
+  Future<void> withdrawMoney(int userId, double amount, {String? description}) async {
     try {
-      await withdrawMoneyUsecase.execute(userId, amount);
+      await withdrawMoneyUsecase.execute(userId, amount, description: description);
       Get.snackbar(
         'Success',
         'Money withdrawn successfully',

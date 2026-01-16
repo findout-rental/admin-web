@@ -71,10 +71,16 @@ class AllApartmentsController extends GetxController {
 
       apartments.value = result.apartments;
       pagination.value = result.pagination;
+      // Only show error if there's an actual error, not just empty data
+      if (result.apartments.isEmpty && result.pagination.totalItems == 0) {
+        // This is normal - no apartments, not an error
+        // The empty state UI will handle this
+      }
     } catch (e) {
+      // Only show error snackbar for actual errors (network, server errors, etc.)
       Get.snackbar(
-        'Error',
-        'Unable to load apartments. Please try again.',
+        'error'.tr,
+        'unable_to_load_apartments'.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -91,8 +97,8 @@ class AllApartmentsController extends GetxController {
       apartmentDetail.value = detail;
     } catch (e) {
       Get.snackbar(
-        'Error',
-        'Unable to load apartment details.',
+        'error'.tr,
+        'unable_to_load_apartment_details'.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {

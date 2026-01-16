@@ -84,11 +84,12 @@ class AllBookingsPage extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Obx(() {
-                final total = controller.bookings.length;
+                final pagination = controller.pagination.value;
+                final total = pagination?.totalItems ?? controller.bookings.length;
                 final active = controller.bookings.where((b) => b.status == 'active').length;
                 final completed = controller.bookings.where((b) => b.status == 'completed').length;
                 return Text(
-                  '$total total • $active active • $completed completed',
+                  '${'total'.tr} $total • $active ${'active'.tr} • $completed ${'completed'.tr}',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.grey[600],
                         fontSize: 13,
@@ -111,18 +112,18 @@ class AllBookingsPage extends StatelessWidget {
           TextField(
             onChanged: controller.onSearchChanged,
             decoration: InputDecoration(
-              hintText: 'Search bookings...',
-              prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+              hintText: 'search_bookings'.tr,
+              prefixIcon: Icon(Icons.search, color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6)),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.grey[300]!),
+                borderSide: BorderSide(color: Theme.of(context).dividerColor),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.grey[300]!),
+                borderSide: BorderSide(color: Theme.of(context).dividerColor),
               ),
               filled: true,
-              fillColor: Colors.grey[50],
+              fillColor: Theme.of(context).inputDecorationTheme.fillColor ?? Theme.of(context).cardColor,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             ),
           ),
@@ -138,22 +139,22 @@ class AllBookingsPage extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        _buildStatusChip(context, 'All', controller.selectedStatus.value == 'all',
+                        _buildStatusChip(context, 'all'.tr, controller.selectedStatus.value == 'all',
                             () => controller.onStatusFilterChanged('all')),
                         const SizedBox(width: 6),
-                        _buildStatusChip(context, 'Pending', controller.selectedStatus.value == 'pending',
+                        _buildStatusChip(context, 'pending'.tr, controller.selectedStatus.value == 'pending',
                             () => controller.onStatusFilterChanged('pending')),
                         const SizedBox(width: 6),
-                        _buildStatusChip(context, 'Approved', controller.selectedStatus.value == 'approved',
+                        _buildStatusChip(context, 'approved'.tr, controller.selectedStatus.value == 'approved',
                             () => controller.onStatusFilterChanged('approved')),
                         const SizedBox(width: 6),
-                        _buildStatusChip(context, 'Active', controller.selectedStatus.value == 'active',
+                        _buildStatusChip(context, 'active'.tr, controller.selectedStatus.value == 'active',
                             () => controller.onStatusFilterChanged('active')),
                         const SizedBox(width: 6),
-                        _buildStatusChip(context, 'Completed', controller.selectedStatus.value == 'completed',
+                        _buildStatusChip(context, 'completed'.tr, controller.selectedStatus.value == 'completed',
                             () => controller.onStatusFilterChanged('completed')),
                         const SizedBox(width: 6),
-                        _buildStatusChip(context, 'Cancelled', controller.selectedStatus.value == 'cancelled',
+                        _buildStatusChip(context, 'cancelled'.tr, controller.selectedStatus.value == 'cancelled',
                             () => controller.onStatusFilterChanged('cancelled')),
                       ],
                     ),
@@ -166,8 +167,8 @@ class AllBookingsPage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
-                  color: Colors.grey[50],
-                  border: Border.all(color: Colors.grey[300]!),
+                  color: Theme.of(context).inputDecorationTheme.fillColor ?? Theme.of(context).cardColor,
+                  border: Border.all(color: Theme.of(context).dividerColor),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Obx(() => DropdownButton<String>(
@@ -180,7 +181,7 @@ class AllBookingsPage extends StatelessWidget {
                       ],
                       onChanged: controller.onSortChanged,
                       underline: const SizedBox.shrink(),
-                      icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey[600]),
+                      icon: Icon(Icons.keyboard_arrow_down, color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6)),
                       style: Theme.of(context).textTheme.bodyMedium,
                     )),
               ),
@@ -194,11 +195,11 @@ class AllBookingsPage extends StatelessWidget {
                             height: 18,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : Icon(Icons.refresh, color: Colors.grey[700]),
+                        : Icon(Icons.refresh, color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.7)),
                     onPressed: controller.isLoading.value ? null : controller.refresh,
-                    tooltip: 'Refresh',
+                    tooltip: 'refresh'.tr,
                     style: IconButton.styleFrom(
-                      backgroundColor: Colors.grey[100],
+                      backgroundColor: Theme.of(context).cardColor,
                       padding: const EdgeInsets.all(10),
                     ),
                   )),
@@ -223,14 +224,16 @@ class AllBookingsPage extends StatelessWidget {
           border: Border.all(
             color: isSelected
                 ? Theme.of(context).colorScheme.primary
-                : Colors.grey[300]!,
+                : Theme.of(context).dividerColor,
             width: 1,
           ),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.grey[700],
+            color: isSelected 
+                ? Colors.white 
+                : Theme.of(context).textTheme.bodyMedium?.color,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
             fontSize: 13,
           ),
@@ -249,7 +252,7 @@ class AllBookingsPage extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
@@ -261,15 +264,15 @@ class AllBookingsPage extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Container(width: 40, height: 40, decoration: BoxDecoration(color: Colors.grey[200], shape: BoxShape.circle)),
+                Container(width: 40, height: 40, decoration: BoxDecoration(color: Theme.of(context).dividerColor, shape: BoxShape.circle)),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(height: 12, width: 150, decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(4))),
+                      Container(height: 12, width: 150, decoration: BoxDecoration(color: Theme.of(context).dividerColor, borderRadius: BorderRadius.circular(4))),
                       const SizedBox(height: 8),
-                      Container(height: 10, width: 100, decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(4))),
+                      Container(height: 10, width: 100, decoration: BoxDecoration(color: Theme.of(context).dividerColor.withValues(alpha: 0.5), borderRadius: BorderRadius.circular(4))),
                     ],
                   ),
                 ),
@@ -286,20 +289,19 @@ class AllBookingsPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.calendar_today_outlined, size: 64, color: Colors.grey[400]),
+          Icon(Icons.calendar_today_outlined, size: 64, color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.4)),
           const SizedBox(height: 24),
           Text(
-            'No bookings found',
+            'no_bookings'.tr,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey[800],
                 ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Bookings will appear here as users make reservations',
+            'bookings_will_appear'.tr,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[600],
+                  color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
                 ),
             textAlign: TextAlign.center,
           ),
@@ -338,7 +340,7 @@ class AllBookingsPage extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -358,7 +360,7 @@ class AllBookingsPage extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
-                  color: Colors.grey[800],
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                 ),
               ),
             ),
@@ -397,7 +399,7 @@ class AllBookingsPage extends StatelessWidget {
               flex: 2,
               child: Text(
                 booking.apartmentAddress,
-                style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+                style: TextStyle(fontSize: 13, color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7)),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -413,7 +415,7 @@ class AllBookingsPage extends StatelessWidget {
                         ? NetworkImage(booking.ownerPhoto!)
                         : null,
                     child: booking.ownerPhoto == null
-                        ? Icon(Icons.person, size: 16, color: Colors.grey[600])
+                        ? Icon(Icons.person, size: 16, color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6))
                         : null,
                   ),
                   const SizedBox(width: 8),
@@ -440,7 +442,7 @@ class AllBookingsPage extends StatelessWidget {
                   ),
                   Text(
                     DateFormat('MMM dd').format(booking.checkOutDate),
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 12, color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.6)),
                   ),
                 ],
               ),
@@ -457,7 +459,7 @@ class AllBookingsPage extends StatelessWidget {
             // Price
             Expanded(
               child: Text(
-                'EGP ${booking.totalPrice.toStringAsFixed(0)}',
+                'SYP ${booking.totalPrice.toStringAsFixed(0)}',
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
@@ -522,24 +524,34 @@ class AllBookingsPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       margin: const EdgeInsets.only(top: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            '${'showing'.tr} ${((pagination.currentPage - 1) * pagination.perPage) + 1}-${(pagination.currentPage * pagination.perPage).clamp(0, pagination.totalItems)} ${'of'.tr} ${pagination.totalItems}',
-            style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-          ),
+          Obx(() {
+            final bookingsCount = controller.bookings.length;
+            final start = pagination.totalItems == 0
+                ? 0
+                : ((pagination.currentPage - 1) * pagination.perPage) + 1;
+            final end = pagination.totalItems == 0
+                ? 0
+                : ((pagination.currentPage - 1) * pagination.perPage + bookingsCount).clamp(0, pagination.totalItems);
+            
+            return Text(
+              '${'showing'.tr} $start-$end ${'of'.tr} ${pagination.totalItems}',
+              style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+            );
+          }),
           Row(
             children: [
               IconButton(
@@ -593,7 +605,7 @@ class AllBookingsPage extends StatelessWidget {
       width: 400,
       margin: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -616,13 +628,13 @@ class AllBookingsPage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
+                border: Border(bottom: BorderSide(color: Theme.of(context).dividerColor)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Booking Details',
+                    'booking_details'.tr,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -657,7 +669,7 @@ class AllBookingsPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Booking #${booking['id']}',
+          '${'booking_details'.tr} #${booking['id']}',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
@@ -666,7 +678,7 @@ class AllBookingsPage extends StatelessWidget {
         
         _buildDetailSection(
           context,
-          'Tenant',
+          'tenant'.tr,
           Row(
             children: [
               CircleAvatar(
@@ -684,13 +696,13 @@ class AllBookingsPage extends StatelessWidget {
         
         _buildDetailSection(
           context,
-          'Apartment',
+          'apartment'.tr,
           Text(apartment['address'] as String? ?? 'N/A'),
         ),
         
         _buildDetailSection(
           context,
-          'Owner',
+          'owner'.tr,
           Row(
             children: [
               CircleAvatar(
@@ -712,16 +724,16 @@ class AllBookingsPage extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildDetailRow('Check-in', booking['check_in_date'] != null
-                  ? DateFormat('MMM dd, yyyy').format(DateTime.parse(booking['check_in_date'] as String))
+              _buildDetailRow(context, 'check_in'.tr, booking['check_in_date'] != null
+                  ? DateFormat('MMM dd, yyyy', Get.locale?.toString() ?? 'en_US').format(DateTime.parse(booking['check_in_date'] as String))
                   : 'N/A'),
               const SizedBox(height: 8),
-              _buildDetailRow('Check-out', booking['check_out_date'] != null
-                  ? DateFormat('MMM dd, yyyy').format(DateTime.parse(booking['check_out_date'] as String))
+              _buildDetailRow(context, 'check_out'.tr, booking['check_out_date'] != null
+                  ? DateFormat('MMM dd, yyyy', Get.locale?.toString() ?? 'en_US').format(DateTime.parse(booking['check_out_date'] as String))
                   : 'N/A'),
               const SizedBox(height: 8),
-              _buildDetailRow('Duration', booking['duration'] != null
-                  ? '${booking['duration']} ${booking['duration'] == 1 ? 'night' : 'nights'}'
+              _buildDetailRow(context, 'duration'.tr, booking['duration'] != null
+                  ? '${booking['duration']} ${booking['duration'] == 1 ? 'night'.tr : 'nights'.tr}'
                   : 'N/A'),
             ],
           ),
@@ -738,7 +750,7 @@ class AllBookingsPage extends StatelessWidget {
             children: [
               Text('total_price'.tr, style: const TextStyle(fontWeight: FontWeight.w600)),
               Text(
-                'EGP ${booking['total_price'] != null ? (booking['total_price'] as num).toStringAsFixed(2) : '0.00'}',
+                'SYP ${booking['total_price'] != null ? (booking['total_price'] as num).toStringAsFixed(2) : '0.00'}',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.primary,
@@ -761,7 +773,7 @@ class AllBookingsPage extends StatelessWidget {
             title,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey[700],
+                  color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
                 ),
           ),
           const SizedBox(height: 8),
@@ -771,12 +783,12 @@ class AllBookingsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
+  Widget _buildDetailRow(BuildContext context, String label, String value) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 13)),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13)),
+        Text(label, style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.6), fontSize: 13)),
+        Text(value, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13, color: Theme.of(context).textTheme.bodyMedium?.color)),
       ],
     );
   }

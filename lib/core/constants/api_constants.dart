@@ -26,6 +26,7 @@ class ApiConstants {
   static const String deleteUser = '/admin/users';
   static const String userDeposit = '/admin/users';
   static const String userWithdraw = '/admin/users';
+  static const String userBalance = '/admin/users';
   static const String userTransactions = '/admin/users';
   static const String allApartments = '/admin/apartments';
   static const String allBookings = '/admin/bookings';
@@ -38,5 +39,6 @@ class ApiConstants {
   static const String notifications = '/notifications';
   static const String markNotificationRead = '/notifications';
   static const String markAllRead = '/notifications/read-all';
+  static const String updateFCMToken = '/notifications/fcm-token';
 }
 

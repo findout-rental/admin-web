@@ -11,6 +11,7 @@ abstract class NotificationRemoteDatasource {
   Future<void> markAsRead(int notificationId);
   Future<void> markAllAsRead();
   Future<int> getUnreadCount();
+  Future<void> updateFCMToken(String fcmToken);
 }
 
 class NotificationRemoteDatasourceImpl implements NotificationRemoteDatasource {
@@ -65,6 +66,14 @@ class NotificationRemoteDatasourceImpl implements NotificationRemoteDatasource {
     } catch (e) {
       return 0;
     }
+  }
+
+  @override
+  Future<void> updateFCMToken(String fcmToken) async {
+    await apiClient.post(
+      ApiConstants.updateFCMToken,
+      data: {'fcm_token': fcmToken},
+    );
   }
 }
 

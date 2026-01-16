@@ -10,5 +10,6 @@ abstract class NotificationRepository {
   Future<void> markAsRead(int notificationId);
   Future<void> markAllAsRead();
   Future<int> getUnreadCount();
+  Future<void> updateFCMToken(String fcmToken);
 }
 

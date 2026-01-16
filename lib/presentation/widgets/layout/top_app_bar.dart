@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../controllers/auth/auth_controller.dart';
 import '../../controllers/notification/notification_controller.dart';
+import '../../controllers/settings/language_controller.dart';
+import '../../controllers/settings/theme_controller.dart';
 
 class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -51,6 +54,77 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
             ],
           ),
           actions: [
+            // Language Toggle Button
+            Obx(() {
+              try {
+                final languageController = Get.find<LanguageController>();
+                final currentLang = languageController.selectedLanguage.value;
+                return IconButton(
+                  icon: Text(
+                    currentLang == 'ar' ? 'EN' : 'AR',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  tooltip: currentLang == 'ar' ? 'switch_to_english'.tr : 'switch_to_arabic'.tr,
+                  onPressed: languageController.isApplying.value
+                      ? null
+                      : () {
+                          final newLang = currentLang == 'ar' ? 'en' : 'ar';
+                          languageController.applyLanguage(newLang);
+                        },
+                );
+              } catch (e) {
+                // If controller not found, try to get current locale from GetX
+                final currentLocale = Get.locale;
+                final currentLang = currentLocale?.languageCode ?? 'en';
+                return IconButton(
+                  icon: Text(
+                    currentLang == 'ar' ? 'EN' : 'AR',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  tooltip: currentLang == 'ar' ? 'switch_to_english'.tr : 'switch_to_arabic'.tr,
+                  onPressed: () {
+                    // Fallback: directly update locale if controller not available
+                    final newLang = currentLang == 'ar' ? 'en' : 'ar';
+                    final locale = newLang == 'ar' ? const Locale('ar', 'SA') : const Locale('en', 'US');
+                    Get.updateLocale(locale);
+                    Get.forceAppUpdate();
+                    // Save to storage
+                    final storage = GetStorage();
+                    storage.write('language', newLang);
+                  },
+                );
+              }
+            }),
+            
+            // Theme Toggle Button
+            Obx(() {
+              try {
+                final themeController = Get.find<ThemeController>();
+                final isDark = themeController.selectedTheme.value == 'dark';
+                return IconButton(
+                  icon: Icon(
+                    isDark ? Icons.light_mode : Icons.dark_mode,
+                    color: Colors.white,
+                  ),
+                  tooltip: isDark ? 'switch_to_light_mode'.tr : 'switch_to_dark_mode'.tr,
+                  onPressed: () {
+                    final newTheme = isDark ? 'light' : 'dark';
+                    themeController.applyTheme(newTheme);
+                  },
+                );
+              } catch (e) {
+                return const SizedBox.shrink();
+              }
+            }),
+            
             // Notifications Icon with Badge
             if (showNotificationIcon)
               Obx(() {
@@ -101,9 +175,9 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
                   return IconButton(
                     icon: const Icon(Icons.notifications_outlined),
                     onPressed: () {
-                      Get.snackbar('Info', 'Notifications feature coming soon');
+                      Get.snackbar('info'.tr, 'notifications_coming_soon'.tr);
                     },
-                    tooltip: 'Notifications',
+                    tooltip: 'notifications'.tr,
                   );
                 }
               }),
@@ -202,26 +276,26 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
                           ),
                         ),
                       if (user != null) const PopupMenuDivider(),
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'settings',
                         child: Row(
                           children: [
-                            Icon(Icons.settings, size: 20),
-                            SizedBox(width: 12),
-                            Text('Settings'),
+                            const Icon(Icons.settings, size: 20),
+                            const SizedBox(width: 12),
+                            Text('settings'.tr),
                           ],
                         ),
                       ),
                       const PopupMenuDivider(),
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'logout',
                         child: Row(
                           children: [
-                            Icon(Icons.logout, size: 20, color: AppColors.error),
-                            SizedBox(width: 12),
+                            const Icon(Icons.logout, size: 20, color: AppColors.error),
+                            const SizedBox(width: 12),
                             Text(
-                              'Logout',
-                              style: TextStyle(color: AppColors.error),
+                              'logout'.tr,
+                              style: const TextStyle(color: AppColors.error),
                             ),
                           ],
                         ),

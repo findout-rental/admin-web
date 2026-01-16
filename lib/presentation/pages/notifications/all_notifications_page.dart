@@ -73,17 +73,17 @@ class AllNotificationsPage extends StatelessWidget {
                           ),
                         ),
                         onChanged: (value) {
-                          // TODO: Implement search functionality
+                          controller.onSearchChanged(value);
                         },
                       ),
                     ),
                     const SizedBox(width: 16),
                     Obx(() {
                       return FilterChip(
-                        selected: false,
+                        selected: controller.showUnreadOnly.value,
                         label: Text('unread_only'.tr),
                         onSelected: (selected) {
-                          // TODO: Implement filter
+                          controller.toggleUnreadFilter();
                         },
                       );
                     }),
@@ -94,11 +94,13 @@ class AllNotificationsPage extends StatelessWidget {
               // Notifications List
               Expanded(
                 child: Obx(() {
+                  final filtered = controller.filteredNotifications;
+                  
                   if (controller.isLoading.value && controller.notifications.isEmpty) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  if (controller.notifications.isEmpty) {
+                  if (filtered.isEmpty && !controller.isLoading.value) {
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -127,10 +129,10 @@ class AllNotificationsPage extends StatelessWidget {
                     onRefresh: () => controller.loadNotifications(),
                     child: ListView.separated(
                       padding: const EdgeInsets.all(16),
-                      itemCount: controller.notifications.length,
+                      itemCount: filtered.length,
                       separatorBuilder: (context, index) => const Divider(height: 1),
                       itemBuilder: (context, index) {
-                        final notification = controller.notifications[index];
+                        final notification = filtered[index];
                         return _buildNotificationItem(context, controller, notification);
                       },
                     ),

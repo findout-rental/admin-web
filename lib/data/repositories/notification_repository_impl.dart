@@ -54,5 +54,14 @@ class NotificationRepositoryImpl implements NotificationRepository {
       return 0;
     }
   }
+
+  @override
+  Future<void> updateFCMToken(String fcmToken) async {
+    try {
+      await remoteDatasource.updateFCMToken(fcmToken);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
 

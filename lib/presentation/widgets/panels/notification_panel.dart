@@ -9,40 +9,39 @@ class NotificationPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<NotificationController>(
-      builder: (controller) {
-        return Container(
-          width: 400,
-          constraints: const BoxConstraints(maxHeight: 600),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Header
-              _buildHeader(context, controller),
-              
-              // Notifications List
-              Flexible(
-                child: _buildNotificationsList(context, controller),
-              ),
-              
-              // Footer
-              _buildFooter(context, controller),
-            ],
-          ),
-        );
-      },
-    );
+    return Obx(() {
+      final controller = Get.find<NotificationController>();
+      return Container(
+        width: 400,
+        constraints: const BoxConstraints(maxHeight: 600),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header
+            _buildHeader(context, controller),
+            
+            // Notifications List
+            Flexible(
+              child: _buildNotificationsList(context, controller),
+            ),
+            
+            // Footer
+            _buildFooter(context, controller),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildHeader(BuildContext context, NotificationController controller) {
@@ -50,13 +49,13 @@ class NotificationPanel extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: Colors.grey[300]!),
+          bottom: BorderSide(color: Theme.of(context).dividerColor),
         ),
       ),
       child: Row(
         children: [
           Text(
-            'Notifications',
+            'notifications'.tr,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -86,7 +85,7 @@ class NotificationPanel extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.close, size: 20),
             onPressed: controller.closePanel,
-            tooltip: 'Close',
+            tooltip: 'close'.tr,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
           ),
@@ -117,14 +116,14 @@ class NotificationPanel extends StatelessWidget {
                 Icon(Icons.notifications_none, size: 64, color: Colors.grey[400]),
                 const SizedBox(height: 16),
                 Text(
-                  'No notifications',
+                  'no_notifications'.tr,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Colors.grey[600],
                       ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'You\'re all caught up!',
+                  'all_caught_up'.tr,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Colors.grey[500],
                       ),
@@ -139,7 +138,7 @@ class NotificationPanel extends StatelessWidget {
         shrinkWrap: true,
         padding: const EdgeInsets.all(8),
         itemCount: controller.notifications.length,
-        separatorBuilder: (context, index) => Divider(height: 1, color: Colors.grey[200]),
+        separatorBuilder: (context, index) => Divider(height: 1, color: Theme.of(context).dividerColor),
         itemBuilder: (context, index) {
           final notification = controller.notifications[index];
           return _buildNotificationItem(context, controller, notification);
@@ -170,7 +169,9 @@ class NotificationPanel extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isUnread ? Colors.blue[50] : Colors.white,
+          color: isUnread 
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
+              : Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -226,17 +227,17 @@ class NotificationPanel extends StatelessWidget {
                     message,
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[700],
+                      color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7) ?? Colors.grey[700],
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    DateFormat('MMM dd, yyyy - HH:mm').format(notification.createdAt),
+                    DateFormat('MMM dd, yyyy - HH:mm', Get.locale?.toString() ?? 'en_US').format(notification.createdAt),
                     style: TextStyle(
                       fontSize: 10,
-                      color: Colors.grey[500],
+                      color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.5) ?? Colors.grey[500],
                     ),
                   ),
                 ],
@@ -253,20 +254,33 @@ class NotificationPanel extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: Theme.of(context).scaffoldBackgroundColor,
         border: Border(
-          top: BorderSide(color: Colors.grey[300]!),
+          top: BorderSide(color: Theme.of(context).dividerColor),
         ),
       ),
       child: Row(
         children: [
           Expanded(
-            child: TextButton(
-              onPressed: () {
-                controller.markAllAsRead();
-              },
-              child: const Text('Mark All as Read'),
-            ),
+            child: Obx(() => TextButton(
+              onPressed: controller.isLoading.value
+                  ? null
+                  : () async {
+                      try {
+                        await controller.markAllAsRead();
+                      } catch (e) {
+                        // Error is already handled in controller
+                        print('Error marking all as read: $e');
+                      }
+                    },
+              child: controller.isLoading.value
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text('mark_all_read'.tr),
+            )),
           ),
           const SizedBox(width: 8),
           TextButton(
@@ -274,7 +288,7 @@ class NotificationPanel extends StatelessWidget {
               controller.closePanel();
               Get.toNamed('/notifications');
             },
-            child: const Text('View All'),
+            child: Text('view_all'.tr),
           ),
         ],
       ),

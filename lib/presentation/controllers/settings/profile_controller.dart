@@ -86,18 +86,20 @@ class ProfileController extends GetxController {
     try {
       final response = await uploadPhotoUsecase.execute(selectedPhoto.value!);
       final user = response['data']?['user'] as Map<String, dynamic>? ?? response;
-      originalPhoto.value = user['personal_photo'] as String? ?? '';
+      final newPhotoUrl = user['personal_photo'] as String? ?? '';
+      originalPhoto.value = newPhotoUrl;
       
       // Update auth controller
       final authController = Get.find<AuthController>();
       await authController.checkAuthStatus();
 
+      // Clear selected photo but keep the new URL visible
       selectedPhoto.value = null;
-      selectedPhotoUrl.value = null;
+      selectedPhotoUrl.value = null; // This will make it use originalPhoto
 
-      Get.snackbar('Success', 'Photo updated successfully');
+      Get.snackbar('success'.tr, 'photo_updated_successfully'.tr);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to upload photo. Please try again.');
+      Get.snackbar('error'.tr, 'failed_to_upload_photo'.tr);
     } finally {
       isUploadingPhoto.value = false;
     }
@@ -129,7 +131,7 @@ class ProfileController extends GetxController {
       final authController = Get.find<AuthController>();
       await authController.checkAuthStatus();
 
-      Get.snackbar('Success', 'Profile updated successfully');
+      Get.snackbar('success'.tr, 'profile_updated_successfully'.tr);
     } catch (e) {
       errorMessage = 'Failed to update profile. Please try again.';
       Get.snackbar('Error', errorMessage!);

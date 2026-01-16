@@ -17,36 +17,36 @@ class Sidebar extends StatefulWidget {
 class _SidebarState extends State<Sidebar> {
   bool _isCollapsed = false;
 
-  final List<SidebarItem> _menuItems = [
+  List<SidebarItem> get _menuItems => [
     SidebarItem(
       icon: Icons.dashboard,
-      label: 'Dashboard',
+      label: 'dashboard'.tr,
       route: '/dashboard',
     ),
     SidebarItem(
       icon: Icons.pending_actions,
-      label: 'Pending Registrations',
+      label: 'pending_registrations'.tr,
       route: '/pending-registrations',
       badge: 0, // Will be updated dynamically
     ),
     SidebarItem(
       icon: Icons.people,
-      label: 'All Users',
+      label: 'all_users'.tr,
       route: '/users',
     ),
     SidebarItem(
       icon: Icons.apartment,
-      label: 'All Apartments',
+      label: 'all_apartments'.tr,
       route: '/apartments',
     ),
     SidebarItem(
       icon: Icons.calendar_today,
-      label: 'All Bookings',
+      label: 'all_bookings'.tr,
       route: '/bookings',
     ),
     SidebarItem(
       icon: Icons.settings,
-      label: 'Settings',
+      label: 'settings'.tr,
       route: '/settings/profile',
     ),
   ];
@@ -80,7 +80,7 @@ class _SidebarState extends State<Sidebar> {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'FindOut Admin',
+                    'app_name'.tr,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -126,7 +126,7 @@ class _SidebarState extends State<Sidebar> {
                   _isCollapsed = !_isCollapsed;
                 });
               },
-              tooltip: _isCollapsed ? 'Expand sidebar' : 'Collapse sidebar',
+              tooltip: _isCollapsed ? 'expand_sidebar'.tr : 'collapse_sidebar'.tr,
             ),
           ),
         ],

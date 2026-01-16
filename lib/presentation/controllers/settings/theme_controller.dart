@@ -39,7 +39,7 @@ class ThemeController extends GetxController {
         break;
     }
 
-    Get.snackbar('Success', 'Theme updated successfully');
+    Get.snackbar('success'.tr, 'theme_updated_successfully'.tr);
   }
 }
 

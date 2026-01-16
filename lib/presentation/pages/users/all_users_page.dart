@@ -106,7 +106,7 @@ class AllUsersPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         border: Border(
-          bottom: BorderSide(color: Colors.grey[300]!),
+          bottom: BorderSide(color: Theme.of(context).dividerColor),
         ),
       ),
       child: Row(
@@ -127,7 +127,7 @@ class AllUsersPage extends StatelessWidget {
                 final stats = controller.statistics.value;
                 if (stats != null) {
                   return Text(
-                    '${'total_apartments_count'.tr}: ${stats.total} ${'users'.tr.toLowerCase()} (${stats.approved} ${'approved'.tr}, ${stats.pending} ${'pending'.tr}, ${stats.rejected} ${'rejected'.tr})',
+                    '${'total'.tr}: ${stats.total} ${'users'.tr.toLowerCase()} (${stats.approved} ${'approved'.tr}, ${stats.pending} ${'pending'.tr}, ${stats.rejected} ${'rejected'.tr})',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Colors.grey[600],
                         ),
@@ -147,7 +147,7 @@ class AllUsersPage extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         border: Border(
-          right: BorderSide(color: Colors.grey[300]!),
+          right: BorderSide(color: Theme.of(context).dividerColor),
         ),
       ),
       child: Column(
@@ -179,7 +179,7 @@ class AllUsersPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: Colors.grey[300]!),
+          bottom: BorderSide(color: Theme.of(context).dividerColor),
         ),
       ),
       child: Column(
@@ -543,16 +543,16 @@ class AllUsersPage extends StatelessWidget {
           Icon(Icons.person_outline, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 24),
           Text(
-            'Select a user to view details',
+            'select_user_to_view_details'.tr,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Choose a user from the list',
+            'choose_user_from_list'.tr,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey[600],
+                  color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.6),
                 ),
           ),
         ],
@@ -584,15 +584,17 @@ class AllUsersPage extends StatelessWidget {
             context,
             'Personal Information',
             [
-              _buildInfoRow('Mobile Number', detail.mobileNumber),
+              _buildInfoRow(context, 'Mobile Number', detail.mobileNumber),
               if (detail.dateOfBirth != null)
                 _buildInfoRow(
+                  context,
                   'Date of Birth',
                   '${DateFormat('MMM dd, yyyy').format(detail.dateOfBirth!)} (${_calculateAge(detail.dateOfBirth!)} years old)',
                 ),
-              _buildInfoRow('Role', detail.role.toUpperCase()),
-              _buildInfoRow('Status', detail.status.toUpperCase()),
+              _buildInfoRow(context, 'Role', detail.role.toUpperCase()),
+              _buildInfoRow(context, 'Status', detail.status.toUpperCase()),
               _buildInfoRow(
+                context,
                 'Registration Date',
                 DateFormat('MMM dd, yyyy').format(detail.createdAt),
               ),
@@ -705,9 +707,9 @@ class AllUsersPage extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'Member since ${DateFormat('MMM yyyy').format(detail.createdAt)}',
+          '${'member_since'.tr} ${DateFormat('MMM yyyy', Get.locale?.toString() ?? 'en_US').format(detail.createdAt)}',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
+                color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
               ),
         ),
       ],
@@ -730,7 +732,7 @@ class AllUsersPage extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -740,16 +742,16 @@ class AllUsersPage extends StatelessWidget {
             width: 150,
             child: Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w500,
-                color: Colors.grey,
+                color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
               ),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(fontWeight: FontWeight.w500),
+              style: TextStyle(fontWeight: FontWeight.w500, color: Theme.of(context).textTheme.bodyMedium?.color),
             ),
           ),
         ],
@@ -764,7 +766,7 @@ class AllUsersPage extends StatelessWidget {
   ) {
     return _buildSection(
       context,
-      'Account Balance',
+      'account_balance'.tr,
       [
         Container(
           padding: const EdgeInsets.all(20),
@@ -778,13 +780,13 @@ class AllUsersPage extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Current Balance',
-                    style: TextStyle(color: Colors.grey),
+                  Text(
+                    'current_balance'.tr,
+                    style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(alpha: 0.7)),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'EGP ${detail.balance.toStringAsFixed(2)}',
+                    'SYP ${detail.balance.toStringAsFixed(2)}',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).colorScheme.primary,
@@ -835,20 +837,21 @@ class AllUsersPage extends StatelessWidget {
     
     return _buildSection(
       context,
-      'Activity Summary',
+      'activity_summary'.tr,
       [
         if (detail.role == 'tenant') ...[
-          _buildInfoRow('Total Bookings', activity.totalBookings?.toString() ?? '0'),
-          _buildInfoRow('Active Bookings', activity.activeBookings?.toString() ?? '0'),
-          _buildInfoRow('Completed Bookings', activity.completedBookings?.toString() ?? '0'),
-          _buildInfoRow('Reviews Given', activity.reviewsGiven?.toString() ?? '0'),
+          _buildInfoRow(context, 'total_bookings'.tr, activity.totalBookings?.toString() ?? '0'),
+          _buildInfoRow(context, 'active_bookings'.tr, activity.activeBookings?.toString() ?? '0'),
+          _buildInfoRow(context, 'completed_bookings'.tr, activity.completedBookings?.toString() ?? '0'),
+          _buildInfoRow(context, 'reviews_given'.tr, activity.reviewsGiven?.toString() ?? '0'),
         ] else ...[
-          _buildInfoRow('Total Apartments', activity.totalApartments?.toString() ?? '0'),
-          _buildInfoRow('Active Apartments', activity.activeApartments?.toString() ?? '0'),
-          _buildInfoRow('Total Bookings Received', activity.totalBookingsReceived?.toString() ?? '0'),
+          _buildInfoRow(context, 'total_apartments'.tr, activity.totalApartments?.toString() ?? '0'),
+          _buildInfoRow(context, 'active_apartments'.tr, activity.activeApartments?.toString() ?? '0'),
+          _buildInfoRow(context, 'total_bookings_received'.tr, activity.totalBookingsReceived?.toString() ?? '0'),
           if (activity.averageRating != null)
             _buildInfoRow(
-              'Average Rating',
+              context,
+              'average_rating'.tr,
               '⭐ ${activity.averageRating!.toStringAsFixed(1)}',
             ),
         ],
@@ -863,7 +866,7 @@ class AllUsersPage extends StatelessWidget {
   ) {
     return _buildSection(
       context,
-      'Account Actions',
+      'account_actions'.tr,
       [
         if (!detail.canDelete) ...[
           Container(
@@ -878,7 +881,7 @@ class AllUsersPage extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'This user has ${detail.activeBookingsCount} active booking(s). Deletion is not allowed.',
+                    'user_has_active_bookings'.tr.replaceAll('{count}', detail.activeBookingsCount.toString()),
                     style: const TextStyle(color: Colors.orange),
                   ),
                 ),
@@ -946,6 +949,7 @@ class AllUsersPage extends StatelessWidget {
     UserDetail detail,
   ) {
     final amountController = TextEditingController();
+    final descriptionController = TextEditingController();
     
     showDialog(
       context: context,
@@ -962,8 +966,18 @@ class AllUsersPage extends StatelessWidget {
               decoration: InputDecoration(
                 labelText: 'amount_egp'.tr,
                 border: const OutlineInputBorder(),
-                prefixText: 'EGP ',
+                prefixText: 'SYP ',
               ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: descriptionController,
+              decoration: InputDecoration(
+                labelText: 'description'.tr,
+                hintText: 'enter_description'.tr,
+                border: const OutlineInputBorder(),
+              ),
+              maxLines: 2,
             ),
           ],
         ),
@@ -977,7 +991,13 @@ class AllUsersPage extends StatelessWidget {
               final amount = double.tryParse(amountController.text);
               if (amount != null && amount > 0) {
                 Get.back();
-                controller.depositMoney(detail.id, amount);
+                controller.depositMoney(
+                  detail.id,
+                  amount,
+                  description: descriptionController.text.trim().isEmpty
+                      ? null
+                      : descriptionController.text.trim(),
+                );
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
@@ -994,6 +1014,7 @@ class AllUsersPage extends StatelessWidget {
     UserDetail detail,
   ) {
     final amountController = TextEditingController();
+    final descriptionController = TextEditingController();
     
     showDialog(
       context: context,
@@ -1003,7 +1024,7 @@ class AllUsersPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text('${'user_label'.tr}: ${detail.fullName}'),
-            Text('${'current_balance'.tr}: EGP ${detail.balance.toStringAsFixed(2)}'),
+            Text('${'current_balance'.tr}: SYP ${detail.balance.toStringAsFixed(2)}'),
             const SizedBox(height: 16),
             TextField(
               controller: amountController,
@@ -1011,8 +1032,18 @@ class AllUsersPage extends StatelessWidget {
               decoration: InputDecoration(
                 labelText: 'amount_egp'.tr,
                 border: const OutlineInputBorder(),
-                prefixText: 'EGP ',
+                prefixText: 'SYP ',
               ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: descriptionController,
+              decoration: InputDecoration(
+                labelText: 'description'.tr,
+                hintText: 'enter_description'.tr,
+                border: const OutlineInputBorder(),
+              ),
+              maxLines: 2,
             ),
           ],
         ),
@@ -1026,7 +1057,13 @@ class AllUsersPage extends StatelessWidget {
               final amount = double.tryParse(amountController.text);
               if (amount != null && amount > 0 && amount <= detail.balance) {
                 Get.back();
-                controller.withdrawMoney(detail.id, amount);
+                controller.withdrawMoney(
+                  detail.id,
+                  amount,
+                  description: descriptionController.text.trim().isEmpty
+                      ? null
+                      : descriptionController.text.trim(),
+                );
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),

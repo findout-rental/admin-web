@@ -20,7 +20,7 @@ class TransactionHistoryPanel extends StatelessWidget {
         return Container(
           width: 500,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.1),
@@ -122,7 +122,7 @@ class TransactionHistoryPanel extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'EGP ${currentBalance.toStringAsFixed(2)}',
+                'SYP ${currentBalance.toStringAsFixed(2)}',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary,
@@ -320,7 +320,7 @@ class TransactionHistoryPanel extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '${isPositive ? '+' : ''}EGP ${amount.abs().toStringAsFixed(2)}',
+                      '${isPositive ? '+' : ''}SYP ${amount.abs().toStringAsFixed(2)}',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15,

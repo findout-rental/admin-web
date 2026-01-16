@@ -19,8 +19,16 @@ abstract class UserRepository {
 
   Future<UserDetail> getUserDetail(int userId);
   Future<void> deleteUser(int userId);
-  Future<void> depositMoney(int userId, double amount);
-  Future<void> withdrawMoney(int userId, double amount);
-  Future<List<Map<String, dynamic>>> getTransactionHistory(int userId);
+  Future<void> depositMoney(int userId, double amount, {String? description});
+  Future<void> withdrawMoney(int userId, double amount, {String? description});
+  Future<double> getUserBalance(int userId);
+  Future<List<Map<String, dynamic>>> getTransactionHistory(
+    int userId, {
+    String? type,
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    String? sort,
+    int? perPage,
+  });
 }
 

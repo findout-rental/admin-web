@@ -19,11 +19,8 @@ class App extends StatelessWidget {
       
       // Enable logging for debugging
       logWriterCallback: (text, {bool? isError}) {
-        if (isError == true) {
-          print('GetX Error: $text');
-        } else {
-          print('GetX: $text');
-        }
+        // Logging is handled by AppLogger in production
+        // This callback is only for GetX internal logging
       },
 
       // Theme
@@ -35,6 +32,17 @@ class App extends StatelessWidget {
       locale: _getInitialLocale(),
       fallbackLocale: const Locale('en', 'US'),
       translations: AppTranslations(),
+      localeResolutionCallback: (locale, supportedLocales) {
+        // Handle locale resolution for GetX
+        if (locale != null) {
+          for (var supportedLocale in supportedLocales) {
+            if (supportedLocale.languageCode == locale.languageCode) {
+              return supportedLocale;
+            }
+          }
+        }
+        return supportedLocales.first;
+      },
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

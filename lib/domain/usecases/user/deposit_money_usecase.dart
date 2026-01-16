@@ -5,8 +5,8 @@ class DepositMoneyUsecase {
 
   DepositMoneyUsecase(this.repository);
 
-  Future<void> execute(int userId, double amount) async {
-    return await repository.depositMoney(userId, amount);
+  Future<void> execute(int userId, double amount, {String? description}) async {
+    return await repository.depositMoney(userId, amount, description: description);
   }
 }
 

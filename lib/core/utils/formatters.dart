@@ -8,7 +8,7 @@ class Formatters {
   
   // Number formatters
   static final NumberFormat currencyFormatter = NumberFormat.currency(
-    symbol: 'EGP ',
+    symbol: 'SYP ',
     decimalDigits: 2,
   );
   

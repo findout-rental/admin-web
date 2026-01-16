@@ -77,16 +77,17 @@ class AppScaffold extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Notification Panel Overlay
             Obx(() {
               try {
-                final notificationController = Get.find<NotificationController>();
+                final notificationController =
+                    Get.find<NotificationController>();
                 if (!notificationController.isPanelOpen.value) {
                   return const SizedBox.shrink();
                 }
-                
-                return Positioned(
+
+                return const Positioned(
                   right: 16,
                   top: 80,
                   child: Material(
@@ -99,15 +100,16 @@ class AppScaffold extends StatelessWidget {
                 return const SizedBox.shrink();
               }
             }),
-            
+
             // Backdrop to close panel when clicking outside
             Obx(() {
               try {
-                final notificationController = Get.find<NotificationController>();
+                final notificationController =
+                    Get.find<NotificationController>();
                 if (!notificationController.isPanelOpen.value) {
                   return const SizedBox.shrink();
                 }
-                
+
                 return Positioned.fill(
                   child: GestureDetector(
                     onTap: () => notificationController.closePanel(),
@@ -163,4 +165,3 @@ class AppScaffold extends StatelessWidget {
     );
   }
 }
-

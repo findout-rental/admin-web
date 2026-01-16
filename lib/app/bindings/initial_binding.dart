@@ -52,8 +52,11 @@ import '../../domain/usecases/notification/get_notifications_usecase.dart';
 import '../../domain/usecases/notification/mark_notification_read_usecase.dart';
 import '../../domain/usecases/notification/mark_all_read_usecase.dart';
 import '../../domain/usecases/notification/get_unread_count_usecase.dart';
+import '../../domain/usecases/notification/update_fcm_token_usecase.dart';
 import '../../presentation/controllers/auth/auth_controller.dart';
 import '../../presentation/controllers/auth/login_controller.dart';
+import '../../presentation/controllers/settings/language_controller.dart';
+import '../../presentation/controllers/settings/theme_controller.dart';
 import '../../presentation/controllers/notification/notification_controller.dart';
 
 class InitialBinding extends Bindings {
@@ -288,6 +291,19 @@ class InitialBinding extends Bindings {
       () => GetUnreadCountUsecase(Get.find<NotificationRepository>()),
       fenix: true,
     );
+    Get.lazyPut(
+      () => UpdateFCMTokenUsecase(Get.find<NotificationRepository>()),
+      fenix: true,
+    );
+    
+    // Settings Controllers
+    Get.lazyPut(
+      () => LanguageController(
+        updateLanguageUsecase: Get.find<UpdateLanguageUsecase>(),
+      ),
+      fenix: true,
+    );
+    Get.lazyPut(() => ThemeController(), fenix: true);
     
     // Controllers
     Get.lazyPut(() => AuthController(Get.find<AuthRepository>()), fenix: true);
@@ -298,6 +314,7 @@ class InitialBinding extends Bindings {
         markNotificationReadUsecase: Get.find<MarkNotificationReadUsecase>(),
         markAllReadUsecase: Get.find<MarkAllReadUsecase>(),
         getUnreadCountUsecase: Get.find<GetUnreadCountUsecase>(),
+        updateFCMTokenUsecase: Get.find<UpdateFCMTokenUsecase>(),
       ),
       fenix: true,
     );

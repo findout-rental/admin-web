@@ -48,10 +48,16 @@ class PendingRegistrationsController extends GetxController {
 
       registrations.value = result.registrations;
       pagination.value = result.pagination;
+      // Only show error if there's an actual error, not just empty data
+      if (result.registrations.isEmpty && result.pagination.totalItems == 0) {
+        // This is normal - no pending registrations, not an error
+        // The empty state UI will handle this
+      }
     } catch (e) {
+      // Only show error snackbar for actual errors (network, server errors, etc.)
       Get.snackbar(
-        'Error',
-        'Unable to load pending registrations. Please try again.',
+        'error'.tr,
+        'unable_to_load_pending_registrations'.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -95,16 +101,16 @@ class PendingRegistrationsController extends GetxController {
     try {
       await approveRegistrationUsecase.execute(userId);
       Get.snackbar(
-        'Success',
-        'Registration approved successfully',
+        'success'.tr,
+        'registration_approved_successfully'.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
       // Reload to remove approved registration from list
       loadRegistrations();
     } catch (e) {
       Get.snackbar(
-        'Error',
-        'Unable to approve registration. Please try again.',
+        'error'.tr,
+        'unable_to_approve_registration'.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -114,16 +120,16 @@ class PendingRegistrationsController extends GetxController {
     try {
       await rejectRegistrationUsecase.execute(userId, reason: reason);
       Get.snackbar(
-        'Success',
-        'Registration rejected successfully',
+        'success'.tr,
+        'registration_rejected_successfully'.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
       // Reload to remove rejected registration from list
       loadRegistrations();
     } catch (e) {
       Get.snackbar(
-        'Error',
-        'Unable to reject registration. Please try again.',
+        'error'.tr,
+        'unable_to_reject_registration'.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
     }

@@ -118,17 +118,17 @@ class PendingRegistrationsPage extends StatelessWidget {
             onChanged: controller.onSearchChanged,
             decoration: InputDecoration(
               hintText: 'search_by_name_or_mobile'.tr,
-              prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+              prefixIcon: Icon(Icons.search, color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6)),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.grey[300]!),
+                borderSide: BorderSide(color: Theme.of(context).dividerColor),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.grey[300]!),
+                borderSide: BorderSide(color: Theme.of(context).dividerColor),
               ),
               filled: true,
-              fillColor: Colors.grey[50],
+              fillColor: Theme.of(context).inputDecorationTheme.fillColor ?? Theme.of(context).cardColor,
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             ),
@@ -143,8 +143,8 @@ class PendingRegistrationsPage extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    border: Border.all(color: Colors.grey[300]!),
+                    color: Theme.of(context).inputDecorationTheme.fillColor ?? Theme.of(context).cardColor,
+                    border: Border.all(color: Theme.of(context).dividerColor),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Obx(() => DropdownButton<String>(
@@ -173,8 +173,8 @@ class PendingRegistrationsPage extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    border: Border.all(color: Colors.grey[300]!),
+                    color: Theme.of(context).inputDecorationTheme.fillColor ?? Theme.of(context).cardColor,
+                    border: Border.all(color: Theme.of(context).dividerColor),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Obx(() => DropdownButton<String>(
@@ -480,7 +480,16 @@ class PendingRegistrationsPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            '${'showing'.tr} ${((pagination.currentPage - 1) * pagination.perPage) + 1}-${(pagination.currentPage * pagination.perPage).clamp(0, pagination.totalItems)} ${'of'.tr} ${pagination.totalItems}',
+            () {
+              final registrationsCount = controller.registrations.length;
+              final start = pagination.totalItems == 0
+                  ? 0
+                  : ((pagination.currentPage - 1) * pagination.perPage) + 1;
+              final end = pagination.totalItems == 0
+                  ? 0
+                  : ((pagination.currentPage - 1) * pagination.perPage + registrationsCount).clamp(0, pagination.totalItems);
+              return '${'showing'.tr} $start-$end ${'of'.tr} ${pagination.totalItems}';
+            }(),
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           Row(
