@@ -4,6 +4,8 @@ import '../../../core/utils/responsive.dart';
 import 'sidebar.dart';
 import 'top_app_bar.dart';
 import 'breadcrumb.dart';
+import '../panels/notification_panel.dart';
+import '../../controllers/notification/notification_controller.dart';
 
 class AppScaffold extends StatelessWidget {
   final String title;
@@ -12,6 +14,8 @@ class AppScaffold extends StatelessWidget {
   final List<Widget>? actions;
   final bool showSidebar;
   final String? currentRoute;
+  final bool showNotificationIcon;
+  final bool showProfileIcon;
 
   const AppScaffold({
     super.key,
@@ -21,6 +25,8 @@ class AppScaffold extends StatelessWidget {
     this.actions,
     this.showSidebar = true,
     this.currentRoute,
+    this.showNotificationIcon = true,
+    this.showProfileIcon = true,
   });
 
   @override
@@ -35,37 +41,86 @@ class AppScaffold extends StatelessWidget {
           return _buildSmallScreenMessage(context);
         }
 
-        return Scaffold(
-          appBar: TopAppBar(
-            title: title,
-            actions: actions,
-          ),
-          body: Row(
-            children: [
-              // Sidebar
-              if (showSidebar)
-                Sidebar(
-                  currentRoute: route,
-                ),
-              // Main Content Area
-              Expanded(
-                child: Column(
-                  children: [
-                    // Breadcrumbs
-                    if (breadcrumbs != null && breadcrumbs!.isNotEmpty)
-                      Breadcrumb(items: breadcrumbs!),
-                    // Content
-                    Expanded(
-                      child: Container(
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                        child: child,
-                      ),
-                    ),
-                  ],
-                ),
+        return Stack(
+          children: [
+            Scaffold(
+              appBar: TopAppBar(
+                title: title,
+                actions: actions,
+                showNotificationIcon: showNotificationIcon,
+                showProfileIcon: showProfileIcon,
               ),
-            ],
-          ),
+              body: Row(
+                children: [
+                  // Sidebar
+                  if (showSidebar)
+                    Sidebar(
+                      currentRoute: route,
+                    ),
+                  // Main Content Area
+                  Expanded(
+                    child: Column(
+                      children: [
+                        // Breadcrumbs
+                        if (breadcrumbs != null && breadcrumbs!.isNotEmpty)
+                          Breadcrumb(items: breadcrumbs!),
+                        // Content
+                        Expanded(
+                          child: Container(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            child: child,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Notification Panel Overlay
+            Obx(() {
+              try {
+                final notificationController = Get.find<NotificationController>();
+                if (!notificationController.isPanelOpen.value) {
+                  return const SizedBox.shrink();
+                }
+                
+                return Positioned(
+                  right: 16,
+                  top: 80,
+                  child: Material(
+                    color: Colors.transparent,
+                    elevation: 8,
+                    child: NotificationPanel(),
+                  ),
+                );
+              } catch (e) {
+                return const SizedBox.shrink();
+              }
+            }),
+            
+            // Backdrop to close panel when clicking outside
+            Obx(() {
+              try {
+                final notificationController = Get.find<NotificationController>();
+                if (!notificationController.isPanelOpen.value) {
+                  return const SizedBox.shrink();
+                }
+                
+                return Positioned.fill(
+                  child: GestureDetector(
+                    onTap: () => notificationController.closePanel(),
+                    child: Container(
+                      color: Colors.black.withValues(alpha: 0.1),
+                    ),
+                  ),
+                );
+              } catch (e) {
+                return const SizedBox.shrink();
+              }
+            }),
+          ],
         );
       },
     );
