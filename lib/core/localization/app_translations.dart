@@ -112,7 +112,6 @@ class AppTranslations extends Translations {
       'location': 'Location',
       'price': 'Price',
       'status': 'Status',
-      'bookings': 'Bookings',
       'created': 'Created',
       'price_low_to_high': 'Price (Low to High)',
       'price_high_to_low': 'Price (High to Low)',
@@ -133,7 +132,6 @@ class AppTranslations extends Translations {
       'all_user_data_deleted': 'All user data will be permanently deleted',
       'delete_permanently': 'Delete Permanently',
       'total_price': 'Total Price',
-      'retry': 'Retry',
       
       // Bookings
       'all_bookings': 'All Bookings',
@@ -152,7 +150,6 @@ class AppTranslations extends Translations {
       'email': 'Email',
       'mobile_number_label': 'Mobile Number',
       'account_information': 'Account Information',
-      'role': 'Role',
       'account_created': 'Account Created',
       'first_name': 'First Name',
       'last_name': 'Last Name',
@@ -167,9 +164,7 @@ class AppTranslations extends Translations {
       'theme': 'Theme',
       'theme_settings': 'Theme Settings',
       'choose_preferred_theme': 'Choose your preferred theme',
-      'light_mode': 'Light Mode',
       'classic_bright_theme': 'Classic bright theme',
-      'dark_mode': 'Dark Mode',
       'easy_on_eyes': 'Easy on the eyes, reduces eye strain',
       'live_preview': 'Live Preview',
       'apply_theme': 'Apply Theme',
@@ -181,7 +176,6 @@ class AppTranslations extends Translations {
       'search_notifications': 'Search notifications...',
       'unread_only': 'Unread Only',
       'no_notifications': 'No notifications',
-      'all_caught_up': 'You\'re all caught up!',
       'mark_as_read': 'Mark as read',
       'related_to_booking': 'Related to booking',
       
@@ -208,7 +202,6 @@ class AppTranslations extends Translations {
       // Legal Pages
       'privacy_policy': 'Privacy Policy',
       'terms_of_service': 'Terms of Service',
-      'last_updated': 'Last updated',
       'go_back': 'Go Back',
       
       // Privacy Policy
@@ -395,7 +388,6 @@ class AppTranslations extends Translations {
       'location': 'Location',
       'price': 'Price',
       'status': 'Status',
-      'bookings': 'Bookings',
       'created': 'Created',
       'price_low_to_high': 'Price (Low to High)',
       'price_high_to_low': 'Price (High to Low)',
@@ -416,7 +408,6 @@ class AppTranslations extends Translations {
       'all_user_data_deleted': 'All user data will be permanently deleted',
       'delete_permanently': 'Delete Permanently',
       'total_price': 'Total Price',
-      'retry': 'Retry',
       
       // Bookings
       'all_bookings': 'All Bookings',
@@ -435,7 +426,6 @@ class AppTranslations extends Translations {
       'email': 'Email',
       'mobile_number_label': 'Mobile Number',
       'account_information': 'Account Information',
-      'role': 'Role',
       'account_created': 'Account Created',
       'first_name': 'First Name',
       'last_name': 'Last Name',
@@ -450,9 +440,7 @@ class AppTranslations extends Translations {
       'theme': 'Theme',
       'theme_settings': 'Theme Settings',
       'choose_preferred_theme': 'Choose your preferred theme',
-      'light_mode': 'Light Mode',
       'classic_bright_theme': 'Classic bright theme',
-      'dark_mode': 'Dark Mode',
       'easy_on_eyes': 'Easy on the eyes, reduces eye strain',
       'live_preview': 'Live Preview',
       'apply_theme': 'Apply Theme',
@@ -464,7 +452,6 @@ class AppTranslations extends Translations {
       'search_notifications': 'Search notifications...',
       'unread_only': 'Unread Only',
       'no_notifications': 'No notifications',
-      'all_caught_up': 'You\'re all caught up!',
       'mark_as_read': 'Mark as read',
       'related_to_booking': 'Related to booking',
       
@@ -491,7 +478,6 @@ class AppTranslations extends Translations {
       // Legal Pages
       'privacy_policy': 'Privacy Policy',
       'terms_of_service': 'Terms of Service',
-      'last_updated': 'Last updated',
       'go_back': 'Go Back',
       
       // Privacy Policy
@@ -636,7 +622,6 @@ class AppTranslations extends Translations {
       'all_roles': 'جميع الأدوار',
       'newest_first': 'الأحدث أولاً',
       'oldest_first': 'الأقدم أولاً',
-      'name_az': 'الاسم (أ-ي)',
       'no_pending_registrations': 'لا توجد طلبات تسجيل معلقة في الوقت الحالي',
       'pending': 'معلق',
       'quick_approve': 'موافقة سريعة',
@@ -680,7 +665,6 @@ class AppTranslations extends Translations {
       'location': 'الموقع',
       'price': 'السعر',
       'status': 'الحالة',
-      'bookings': 'الحجوزات',
       'created': 'تم الإنشاء',
       'price_low_to_high': 'السعر (من الأقل إلى الأعلى)',
       'price_high_to_low': 'السعر (من الأعلى إلى الأقل)',
@@ -701,9 +685,6 @@ class AppTranslations extends Translations {
       'all_user_data_deleted': 'سيتم حذف جميع بيانات المستخدم بشكل دائم',
       'delete_permanently': 'حذف بشكل دائم',
       'total_price': 'السعر الإجمالي',
-      'retry': 'إعادة المحاولة',
-      'name_az': 'الاسم (أ-ي)',
-      'name_za': 'الاسم (ي-أ)',
       'check_in': 'تسجيل الوصول',
       'check_out': 'تسجيل المغادرة',
       'user_label': 'المستخدم',
@@ -736,7 +717,6 @@ class AppTranslations extends Translations {
       'email': 'البريد الإلكتروني',
       'mobile_number_label': 'رقم الجوال',
       'account_information': 'معلومات الحساب',
-      'role': 'الدور',
       'account_created': 'تم إنشاء الحساب',
       'first_name': 'الاسم الأول',
       'last_name': 'اسم العائلة',
@@ -751,9 +731,7 @@ class AppTranslations extends Translations {
       'theme': 'المظهر',
       'theme_settings': 'إعدادات المظهر',
       'choose_preferred_theme': 'اختر المظهر المفضل لديك',
-      'light_mode': 'الوضع الفاتح',
       'classic_bright_theme': 'مظهر فاتح كلاسيكي',
-      'dark_mode': 'الوضع الداكن',
       'easy_on_eyes': 'مريح للعين، يقلل إجهاد العين',
       'live_preview': 'معاينة مباشرة',
       'apply_theme': 'تطبيق المظهر',
@@ -765,7 +743,6 @@ class AppTranslations extends Translations {
       'search_notifications': 'البحث في الإشعارات...',
       'unread_only': 'غير المقروءة فقط',
       'no_notifications': 'لا توجد إشعارات',
-      'all_caught_up': 'لقد انتهيت من كل شيء!',
       'mark_as_read': 'وضع علامة مقروءة',
       'related_to_booking': 'متعلق بالحجز',
       
@@ -841,7 +818,6 @@ class AppTranslations extends Translations {
       'all_roles': 'جميع الأدوار',
       'newest_first': 'الأحدث أولاً',
       'oldest_first': 'الأقدم أولاً',
-      'name_az': 'الاسم (أ-ي)',
       'no_pending_registrations': 'لا توجد طلبات تسجيل معلقة في الوقت الحالي',
       'pending': 'معلق',
       'quick_approve': 'موافقة سريعة',
@@ -885,7 +861,6 @@ class AppTranslations extends Translations {
       'location': 'الموقع',
       'price': 'السعر',
       'status': 'الحالة',
-      'bookings': 'الحجوزات',
       'created': 'تم الإنشاء',
       'price_low_to_high': 'السعر (من الأقل إلى الأعلى)',
       'price_high_to_low': 'السعر (من الأعلى إلى الأقل)',
@@ -906,9 +881,6 @@ class AppTranslations extends Translations {
       'all_user_data_deleted': 'سيتم حذف جميع بيانات المستخدم بشكل دائم',
       'delete_permanently': 'حذف بشكل دائم',
       'total_price': 'السعر الإجمالي',
-      'retry': 'إعادة المحاولة',
-      'name_az': 'الاسم (أ-ي)',
-      'name_za': 'الاسم (ي-أ)',
       'check_in': 'تسجيل الوصول',
       'check_out': 'تسجيل المغادرة',
       'user_label': 'المستخدم',
@@ -941,7 +913,6 @@ class AppTranslations extends Translations {
       'email': 'البريد الإلكتروني',
       'mobile_number_label': 'رقم الجوال',
       'account_information': 'معلومات الحساب',
-      'role': 'الدور',
       'account_created': 'تم إنشاء الحساب',
       'first_name': 'الاسم الأول',
       'last_name': 'اسم العائلة',
@@ -956,9 +927,7 @@ class AppTranslations extends Translations {
       'theme': 'المظهر',
       'theme_settings': 'إعدادات المظهر',
       'choose_preferred_theme': 'اختر المظهر المفضل لديك',
-      'light_mode': 'الوضع الفاتح',
       'classic_bright_theme': 'مظهر فاتح كلاسيكي',
-      'dark_mode': 'الوضع الداكن',
       'easy_on_eyes': 'مريح للعين، يقلل إجهاد العين',
       'live_preview': 'معاينة مباشرة',
       'apply_theme': 'تطبيق المظهر',
@@ -970,7 +939,6 @@ class AppTranslations extends Translations {
       'search_notifications': 'البحث في الإشعارات...',
       'unread_only': 'غير المقروءة فقط',
       'no_notifications': 'لا توجد إشعارات',
-      'all_caught_up': 'لقد انتهيت من كل شيء!',
       'mark_as_read': 'وضع علامة مقروءة',
       'related_to_booking': 'متعلق بالحجز',
       
@@ -997,7 +965,6 @@ class AppTranslations extends Translations {
       // Legal Pages
       'privacy_policy': 'سياسة الخصوصية',
       'terms_of_service': 'شروط الخدمة',
-      'last_updated': 'آخر تحديث',
       'go_back': 'رجوع',
       
       // Privacy Policy
