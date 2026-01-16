@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../core/constants/storage_keys.dart';
+import '../../../core/utils/app_logger.dart';
 import '../../../domain/repositories/auth_repository.dart';
 import 'auth_controller.dart';
 
@@ -21,17 +22,52 @@ class LoginController extends GetxController {
   final isPasswordVisible = false.obs;
   final rememberMe = false.obs;
   final isLoading = false.obs;
-  String? errorMessage;
+  final errorMessage = Rxn<String>();
+  final currentLanguage = 'en'.obs; // Reactive language variable
+  final currentTheme = 'light'.obs; // Reactive theme variable
   bool _isLoginInProgress =
       false; // Synchronous flag to prevent race conditions
 
   @override
   void onInit() {
     super.onInit();
-    // Initialize dependencies after bindings are ready
-    authRepository = Get.find<AuthRepository>();
-    authController = Get.find<AuthController>();
-    _loadSavedCredentials();
+    try {
+      // Initialize dependencies after bindings are ready
+      authRepository = Get.find<AuthRepository>();
+      authController = Get.find<AuthController>();
+      _loadSavedCredentials();
+      _loadLanguagePreference();
+      _loadThemePreference();
+    } catch (e, stackTrace) {
+      AppLogger.error(
+        'Failed to initialize LoginController',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      // Set default values to prevent crashes
+      errorMessage.value = 'Initialization error. Please refresh the page.';
+    }
+  }
+
+  void _loadLanguagePreference() {
+    try {
+      final savedLanguage = storage.read<String>(StorageKeys.language) ?? 'en';
+      currentLanguage.value = savedLanguage;
+    } catch (e) {
+      // Use default language
+      currentLanguage.value = 'en';
+    }
+  }
+
+  void _loadThemePreference() {
+    try {
+      final savedTheme = storage.read<String>(StorageKeys.theme) ?? 'light';
+      currentTheme.value = savedTheme;
+      _applyTheme(savedTheme);
+    } catch (e) {
+      // Use default theme
+      currentTheme.value = 'light';
+    }
   }
 
   void _loadSavedCredentials() {
@@ -70,7 +106,7 @@ class LoginController extends GetxController {
       return;
     }
 
-    errorMessage = null;
+    errorMessage.value = null;
 
     try {
       final mobileNumber = mobileNumberController.text.trim();
@@ -90,12 +126,11 @@ class LoginController extends GetxController {
 
         Get.offAllNamed('/dashboard');
       } else {
-        errorMessage = 'Invalid mobile number or password. Please try again.';
+        errorMessage.value = 'invalid_credentials'.tr;
         update();
       }
     } catch (e) {
-      errorMessage = _getErrorMessage(e);
-      update();
+      errorMessage.value = _getErrorMessage(e);
     } finally {
       _isLoginInProgress = false;
       isLoading.value = false;
@@ -104,16 +139,20 @@ class LoginController extends GetxController {
   }
 
   String _getErrorMessage(dynamic error) {
-    // Error handling - removed print statements for production code
-    // TODO: Use proper logging framework if needed
+    // Log error for debugging
+    AppLogger.error(
+      'Login error',
+      error: error,
+      stackTrace: StackTrace.current,
+    );
 
     if (error.toString().contains('network') ||
         error.toString().contains('connection')) {
-      return 'Unable to connect. Please check your internet connection.';
+      return 'network_error'.tr;
     }
     if (error.toString().contains('401') ||
         error.toString().contains('unauthorized')) {
-      return 'Invalid mobile number or password. Please try again.';
+      return 'invalid_credentials'.tr;
     }
     // Return more specific error message
     final errorStr = error.toString();
@@ -121,8 +160,56 @@ class LoginController extends GetxController {
       return 'Error parsing server response. Please contact support.';
     }
     return errorStr.length > 100
-        ? 'Something went wrong. Please try again later.'
+        ? 'unknown_error'.tr
         : errorStr;
+  }
+
+  void changeLanguage(String language) {
+    try {
+      // Update reactive variable first
+      currentLanguage.value = language;
+      
+      // Save language preference
+      storage.write(StorageKeys.language, language);
+      
+      // Update GetX locale - use the exact format that matches our translations
+      final locale = language == 'ar' 
+          ? const Locale('ar', 'SA') 
+          : const Locale('en', 'US');
+      
+      // Force GetX to update locale
+      Get.updateLocale(locale);
+      
+      // Debug: Check if translations are available
+      AppLogger.info('Changed language to: $language, locale: ${locale.toString()}');
+      AppLogger.info('Translation test: ${'welcome_back'.tr}');
+    } catch (e) {
+      // Silently fail - language switching is optional
+      AppLogger.error('Failed to change language', error: e);
+    }
+  }
+
+  void toggleTheme() {
+    try {
+      final newTheme = currentTheme.value == 'light' ? 'dark' : 'light';
+      currentTheme.value = newTheme;
+      storage.write(StorageKeys.theme, newTheme);
+      _applyTheme(newTheme);
+    } catch (e) {
+      AppLogger.error('Failed to toggle theme', error: e);
+    }
+  }
+
+  void _applyTheme(String theme) {
+    switch (theme) {
+      case 'dark':
+        Get.changeThemeMode(ThemeMode.dark);
+        break;
+      case 'light':
+      default:
+        Get.changeThemeMode(ThemeMode.light);
+        break;
+    }
   }
 
   @override

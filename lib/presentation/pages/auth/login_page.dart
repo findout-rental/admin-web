@@ -8,32 +8,56 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<LoginController>(
-      builder: (controller) {
-        return Scaffold(
-          body: LayoutBuilder(
-            builder: (context, constraints) {
-              // Show message if screen is too small
-              if (constraints.maxWidth < 1024) {
-                return _buildSmallScreenMessage(context);
-              }
-
-              return Row(
-                children: [
-                  // Left Panel - Branding (50%)
-                  Expanded(
-                    child: _buildBrandingPanel(context),
-                  ),
-                  // Right Panel - Login Form (50%)
-                  Expanded(
-                    child: _buildLoginForm(context, controller),
-                  ),
-                ],
-              );
-            },
+    // Ensure controller is initialized
+    try {
+      if (!Get.isRegistered<LoginController>()) {
+        Get.put(LoginController());
+      }
+    } catch (e) {
+      // Return error widget instead of crashing
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              Text('Error: $e'),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () => Get.offAllNamed('/login'),
+                child: const Text('Retry'),
+              ),
+            ],
           ),
-        );
-      },
+        ),
+      );
+    }
+    
+    final controller = Get.find<LoginController>();
+    
+    return Scaffold(
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          // Show message if screen is too small
+          if (constraints.maxWidth < 1024) {
+            return _buildSmallScreenMessage(context);
+          }
+
+          return Row(
+            children: [
+              // Left Panel - Branding (50%)
+              Expanded(
+                child: _buildBrandingPanel(context),
+              ),
+              // Right Panel - Login Form (50%)
+              Expanded(
+                child: _buildLoginForm(context, controller),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -99,7 +123,7 @@ class LoginPage extends StatelessWidget {
               const SizedBox(height: 32),
               // Headline
               Text(
-                'FindOut Admin',
+                'app_name'.tr,
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -108,7 +132,7 @@ class LoginPage extends StatelessWidget {
               const SizedBox(height: 16),
               // Subheadline
               Text(
-                'Manage your apartment rental platform',
+                'app_tagline'.tr,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: Colors.white70,
                     ),
@@ -117,7 +141,7 @@ class LoginPage extends StatelessWidget {
               const Spacer(),
               // Version
               Text(
-                'Version 1.0.0',
+                'version'.tr,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.white60,
                     ),
@@ -144,14 +168,14 @@ class LoginPage extends StatelessWidget {
                 children: [
                   // Header
                   Text(
-                    'Welcome Back',
+                    'welcome_back'.tr,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Sign in to your admin account',
+                    'sign_in_to_admin'.tr,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: Colors.grey[600],
                         ),
@@ -159,31 +183,39 @@ class LoginPage extends StatelessWidget {
                   const SizedBox(height: 48),
 
                   // Error Message
-                  if (controller.errorMessage != null) ...[
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.red[50],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.red[200]!),
-                      ),
-                      child: Row(
+                  Obx(() {
+                    final error = controller.errorMessage.value;
+                    if (error != null && error.isNotEmpty) {
+                      return Column(
                         children: [
-                          Icon(Icons.error_outline,
-                              color: Colors.red[700], size: 20),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              controller.errorMessage!,
-                              style: TextStyle(
-                                  color: Colors.red[700], fontSize: 14),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.red[50],
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.red[200]!),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.error_outline,
+                                    color: Colors.red[700], size: 20),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    error,
+                                    style: TextStyle(
+                                        color: Colors.red[700], fontSize: 14),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
+                          const SizedBox(height: 24),
                         ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                  ],
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  }),
 
                   // Mobile Number Field
                   TextFormField(
@@ -191,11 +223,12 @@ class LoginPage extends StatelessWidget {
                     keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.next,
                     autofocus: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Mobile Number',
-                      hintText: '+201234567890',
-                      prefixIcon: Icon(Icons.phone),
-                      border: OutlineInputBorder(),
+                    textDirection: TextDirection.ltr, // Force LTR for phone numbers
+                    decoration: InputDecoration(
+                      labelText: 'mobile_number'.tr,
+                      hintText: 'enter_mobile'.tr,
+                      prefixIcon: const Icon(Icons.phone),
+                      border: const OutlineInputBorder(),
                     ),
                     validator: Validators.mobileNumber,
                   ),
@@ -209,8 +242,8 @@ class LoginPage extends StatelessWidget {
                         // Removed onFieldSubmitted - Enter key will focus the button
                         // User can then press Enter again or click the button
                         decoration: InputDecoration(
-                          labelText: 'Password',
-                          hintText: 'Enter your password',
+                          labelText: 'password'.tr,
+                          hintText: 'enter_password'.tr,
                           prefixIcon: const Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -233,18 +266,13 @@ class LoginPage extends StatelessWidget {
                             value: controller.rememberMe.value,
                             onChanged: controller.toggleRememberMe,
                           )),
-                      const Text('Keep me signed in'),
+                      Text('keep_signed_in'.tr),
                       const Spacer(),
                       TextButton(
                         onPressed: () {
-                          // TODO: Navigate to forgot password (future feature)
-                          Get.snackbar(
-                            'Info',
-                            'Forgot password feature coming soon',
-                            snackPosition: SnackPosition.BOTTOM,
-                          );
+                          Get.toNamed('/forgot-password');
                         },
-                        child: const Text('Forgot Password?'),
+                        child: Text('forgot_password'.tr),
                       ),
                     ],
                   ),
@@ -269,32 +297,72 @@ class LoginPage extends StatelessWidget {
                                       Colors.white),
                                 ),
                               )
-                            : const Text(
-                                'Sign In',
-                                style: TextStyle(fontSize: 16),
+                            : Text(
+                                'sign_in'.tr,
+                                style: const TextStyle(fontSize: 16),
                               ),
                       )),
                   const SizedBox(height: 32),
 
-                  // Language Selector
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          // TODO: Change language to English
-                        },
-                        child: const Text('English'),
-                      ),
-                      const Text('|'),
-                      TextButton(
-                        onPressed: () {
-                          // TODO: Change language to Arabic
-                        },
-                        child: const Text('العربية'),
-                      ),
-                    ],
-                  ),
+                  // Language Selector and Theme Toggle
+                  Obx(() {
+                    final isEnglish = controller.currentLanguage.value == 'en';
+                    final isLight = controller.currentTheme.value == 'light';
+                    
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            controller.changeLanguage('en');
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: isEnglish 
+                                ? Theme.of(context).colorScheme.primary 
+                                : Colors.grey[600],
+                          ),
+                          child: Text(
+                            'english'.tr,
+                            style: TextStyle(
+                              fontWeight: isEnglish ? FontWeight.bold : FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          '|',
+                          style: TextStyle(color: Colors.grey[400]),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            controller.changeLanguage('ar');
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: !isEnglish 
+                                ? Theme.of(context).colorScheme.primary 
+                                : Colors.grey[600],
+                          ),
+                          child: Text(
+                            'arabic'.tr,
+                            style: TextStyle(
+                              fontWeight: !isEnglish ? FontWeight.bold : FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          '|',
+                          style: TextStyle(color: Colors.grey[400]),
+                        ),
+                        IconButton(
+                          onPressed: controller.toggleTheme,
+                          icon: Icon(
+                            isLight ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          tooltip: isLight ? 'dark_mode'.tr : 'light_mode'.tr,
+                        ),
+                      ],
+                    );
+                  }),
 
                   // Footer Links
                   const SizedBox(height: 24),
@@ -303,16 +371,16 @@ class LoginPage extends StatelessWidget {
                     children: [
                       TextButton(
                         onPressed: () {
-                          // TODO: Open privacy policy
+                          Get.toNamed('/privacy-policy');
                         },
-                        child: const Text('Privacy Policy'),
+                        child: Text('privacy_policy'.tr),
                       ),
                       const Text('|'),
                       TextButton(
                         onPressed: () {
-                          // TODO: Open terms of service
+                          Get.toNamed('/terms-of-service');
                         },
-                        child: const Text('Terms of Service'),
+                        child: Text('terms_of_service'.tr),
                       ),
                     ],
                   ),
