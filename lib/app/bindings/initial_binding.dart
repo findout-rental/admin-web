@@ -8,6 +8,8 @@ import '../../data/datasources/remote/user_remote_datasource.dart';
 import '../../data/datasources/remote/apartment_remote_datasource.dart';
 import '../../data/datasources/remote/booking_remote_datasource.dart';
 import '../../data/datasources/remote/profile_remote_datasource.dart';
+import '../../data/datasources/remote/location_remote_datasource.dart';
+import '../../data/datasources/remote/notification_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../data/repositories/dashboard_repository_impl.dart';
 import '../../data/repositories/registration_repository_impl.dart';
@@ -15,6 +17,8 @@ import '../../data/repositories/user_repository_impl.dart';
 import '../../data/repositories/apartment_repository_impl.dart';
 import '../../data/repositories/booking_repository_impl.dart';
 import '../../data/repositories/profile_repository_impl.dart';
+import '../../data/repositories/location_repository_impl.dart';
+import '../../data/repositories/notification_repository_impl.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/repositories/dashboard_repository.dart';
 import '../../domain/repositories/registration_repository.dart';
@@ -22,6 +26,8 @@ import '../../domain/repositories/user_repository.dart';
 import '../../domain/repositories/apartment_repository.dart';
 import '../../domain/repositories/booking_repository.dart';
 import '../../domain/repositories/profile_repository.dart';
+import '../../domain/repositories/location_repository.dart';
+import '../../domain/repositories/notification_repository.dart';
 import '../../domain/usecases/dashboard/get_statistics_usecase.dart';
 import '../../domain/usecases/registration/get_pending_registrations_usecase.dart';
 import '../../domain/usecases/registration/approve_registration_usecase.dart';
@@ -40,8 +46,15 @@ import '../../domain/usecases/profile/get_profile_usecase.dart';
 import '../../domain/usecases/profile/update_profile_usecase.dart';
 import '../../domain/usecases/profile/upload_photo_usecase.dart';
 import '../../domain/usecases/profile/update_language_usecase.dart';
+import '../../domain/usecases/location/get_governorates_usecase.dart';
+import '../../domain/usecases/location/get_cities_by_governorate_usecase.dart';
+import '../../domain/usecases/notification/get_notifications_usecase.dart';
+import '../../domain/usecases/notification/mark_notification_read_usecase.dart';
+import '../../domain/usecases/notification/mark_all_read_usecase.dart';
+import '../../domain/usecases/notification/get_unread_count_usecase.dart';
 import '../../presentation/controllers/auth/auth_controller.dart';
 import '../../presentation/controllers/auth/login_controller.dart';
+import '../../presentation/controllers/notification/notification_controller.dart';
 
 class InitialBinding extends Bindings {
   @override
@@ -224,9 +237,70 @@ class InitialBinding extends Bindings {
       fenix: true,
     );
     
+    // Location Data Sources
+    Get.lazyPut<LocationRemoteDatasource>(
+      () => LocationRemoteDatasourceImpl(Get.find<ApiClient>()),
+      fenix: true,
+    );
+    
+    // Location Repositories
+    Get.lazyPut<LocationRepository>(
+      () => LocationRepositoryImpl(Get.find<LocationRemoteDatasource>()),
+      fenix: true,
+    );
+    
+    // Location Use Cases
+    Get.lazyPut(
+      () => GetGovernoratesUsecase(Get.find<LocationRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => GetCitiesByGovernorateUsecase(Get.find<LocationRepository>()),
+      fenix: true,
+    );
+    
+    // Notification Data Sources
+    Get.lazyPut<NotificationRemoteDatasource>(
+      () => NotificationRemoteDatasourceImpl(Get.find<ApiClient>()),
+      fenix: true,
+    );
+    
+    // Notification Repositories
+    Get.lazyPut<NotificationRepository>(
+      () => NotificationRepositoryImpl(Get.find<NotificationRemoteDatasource>()),
+      fenix: true,
+    );
+    
+    // Notification Use Cases
+    Get.lazyPut(
+      () => GetNotificationsUsecase(Get.find<NotificationRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => MarkNotificationReadUsecase(Get.find<NotificationRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => MarkAllReadUsecase(Get.find<NotificationRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut(
+      () => GetUnreadCountUsecase(Get.find<NotificationRepository>()),
+      fenix: true,
+    );
+    
     // Controllers
     Get.lazyPut(() => AuthController(Get.find<AuthRepository>()), fenix: true);
     Get.lazyPut(() => LoginController(), fenix: true);
+    Get.lazyPut(
+      () => NotificationController(
+        getNotificationsUsecase: Get.find<GetNotificationsUsecase>(),
+        markNotificationReadUsecase: Get.find<MarkNotificationReadUsecase>(),
+        markAllReadUsecase: Get.find<MarkAllReadUsecase>(),
+        getUnreadCountUsecase: Get.find<GetUnreadCountUsecase>(),
+      ),
+      fenix: true,
+    );
   }
 }
 
