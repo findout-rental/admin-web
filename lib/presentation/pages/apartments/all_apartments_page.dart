@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../domain/usecases/apartment/get_all_apartments_usecase.dart';
 import '../../../domain/usecases/apartment/get_apartment_detail_usecase.dart';
+import '../../../domain/usecases/location/get_governorates_usecase.dart';
+import '../../../domain/usecases/location/get_cities_by_governorate_usecase.dart';
 import '../../controllers/apartment/all_apartments_controller.dart';
 import '../../widgets/layout/app_scaffold.dart';
 import '../../widgets/layout/breadcrumb.dart';
@@ -23,6 +25,8 @@ class AllApartmentsPage extends StatelessWidget {
         init: AllApartmentsController(
           getAllApartmentsUsecase: Get.find<GetAllApartmentsUsecase>(),
           getApartmentDetailUsecase: Get.find<GetApartmentDetailUsecase>(),
+          getGovernoratesUsecase: Get.find<GetGovernoratesUsecase>(),
+          getCitiesByGovernorateUsecase: Get.find<GetCitiesByGovernorateUsecase>(),
         ),
         builder: (controller) {
           return Column(
@@ -171,50 +175,110 @@ class AllApartmentsPage extends StatelessWidget {
               ),
               const SizedBox(width: 8),
 
-              // Governorate Filter (placeholder - would need API to get list)
+              // Governorate Filter
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.grey[50],
+                    border: Border.all(color: Colors.grey[300]!),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  child: DropdownButton<String>(
-                    value: controller.selectedGovernorate.value.isEmpty
-                        ? null
-                        : controller.selectedGovernorate.value,
-                    hint: const Text('All Governorates'),
-                    items: const [
-                      // TODO: Load from API
-                    ],
-                    onChanged: controller.onGovernorateChanged,
-                    underline: const SizedBox.shrink(),
-                    isExpanded: true,
-                  ),
+                  child: Obx(() {
+                    if (controller.isLoadingGovernorates.value) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        child: SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      );
+                    }
+                    
+                    return DropdownButton<String>(
+                      value: controller.selectedGovernorate.value.isEmpty
+                          ? null
+                          : controller.selectedGovernorate.value,
+                      hint: const Text('All Governorates'),
+                      items: [
+                        const DropdownMenuItem<String>(
+                          value: '',
+                          child: Text('All Governorates'),
+                        ),
+                        ...controller.governorates.map((gov) {
+                          return DropdownMenuItem<String>(
+                            value: gov.name,
+                            child: Text(gov.name),
+                          );
+                        }),
+                      ],
+                      onChanged: controller.onGovernorateChanged,
+                      underline: const SizedBox.shrink(),
+                      icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey[600]),
+                      isExpanded: true,
+                    );
+                  }),
                 ),
               ),
               const SizedBox(width: 8),
 
-              // City Filter (placeholder)
+              // City Filter
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.grey[50],
+                    border: Border.all(color: Colors.grey[300]!),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  child: DropdownButton<String>(
-                    value: controller.selectedCity.value.isEmpty
-                        ? null
-                        : controller.selectedCity.value,
-                    hint: const Text('All Cities'),
-                    items: const [
-                      // TODO: Load from API based on selected governorate
-                    ],
-                    onChanged: controller.onCityChanged,
-                    underline: const SizedBox.shrink(),
-                    isExpanded: true,
-                  ),
+                  child: Obx(() {
+                    if (controller.selectedGovernorate.value.isEmpty) {
+                      return DropdownButton<String>(
+                        value: null,
+                        hint: const Text('Select Governorate First'),
+                        items: const [],
+                        onChanged: null,
+                        underline: const SizedBox.shrink(),
+                        icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey[400]),
+                        isExpanded: true,
+                      );
+                    }
+                    
+                    if (controller.isLoadingCities.value) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        child: SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      );
+                    }
+                    
+                    return DropdownButton<String>(
+                      value: controller.selectedCity.value.isEmpty
+                          ? null
+                          : controller.selectedCity.value,
+                      hint: const Text('All Cities'),
+                      items: [
+                        const DropdownMenuItem<String>(
+                          value: '',
+                          child: Text('All Cities'),
+                        ),
+                        ...controller.cities.map((city) {
+                          return DropdownMenuItem<String>(
+                            value: city.name,
+                            child: Text(city.name),
+                          );
+                        }),
+                      ],
+                      onChanged: controller.onCityChanged,
+                      underline: const SizedBox.shrink(),
+                      icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey[600]),
+                      isExpanded: true,
+                    );
+                  }),
                 ),
               ),
               const SizedBox(width: 8),

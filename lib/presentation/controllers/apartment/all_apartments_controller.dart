@@ -1,16 +1,24 @@
 import 'package:get/get.dart';
 import '../../../domain/entities/apartment.dart';
 import '../../../domain/entities/pagination.dart';
+import '../../../domain/entities/governorate.dart';
+import '../../../domain/entities/city.dart';
 import '../../../domain/usecases/apartment/get_all_apartments_usecase.dart';
 import '../../../domain/usecases/apartment/get_apartment_detail_usecase.dart';
+import '../../../domain/usecases/location/get_governorates_usecase.dart';
+import '../../../domain/usecases/location/get_cities_by_governorate_usecase.dart';
 
 class AllApartmentsController extends GetxController {
   final GetAllApartmentsUsecase getAllApartmentsUsecase;
   final GetApartmentDetailUsecase getApartmentDetailUsecase;
+  final GetGovernoratesUsecase getGovernoratesUsecase;
+  final GetCitiesByGovernorateUsecase getCitiesByGovernorateUsecase;
 
   AllApartmentsController({
     required this.getAllApartmentsUsecase,
     required this.getApartmentDetailUsecase,
+    required this.getGovernoratesUsecase,
+    required this.getCitiesByGovernorateUsecase,
   });
 
   // State
@@ -31,11 +39,18 @@ class AllApartmentsController extends GetxController {
   final selectedApartmentId = Rxn<int>();
   final isLoadingDetail = false.obs;
   final apartmentDetail = Rxn<Map<String, dynamic>>();
+  
+  // Locations
+  final governorates = <Governorate>[].obs;
+  final cities = <City>[].obs;
+  final isLoadingGovernorates = false.obs;
+  final isLoadingCities = false.obs;
 
   @override
   void onInit() {
     super.onInit();
     loadApartments();
+    loadGovernorates();
   }
 
   Future<void> loadApartments({bool showLoading = true}) async {
@@ -99,9 +114,47 @@ class AllApartmentsController extends GetxController {
     }
   }
 
+  Future<void> loadGovernorates() async {
+    isLoadingGovernorates.value = true;
+    try {
+      final govs = await getGovernoratesUsecase.execute();
+      governorates.value = govs;
+    } catch (e) {
+      // Silently fail - locations are optional
+      governorates.value = [];
+    } finally {
+      isLoadingGovernorates.value = false;
+    }
+  }
+  
+  Future<void> loadCitiesForGovernorate(String governorate) async {
+    if (governorate.isEmpty) {
+      cities.value = [];
+      return;
+    }
+    
+    isLoadingCities.value = true;
+    try {
+      final cityList = await getCitiesByGovernorateUsecase.execute(governorate);
+      cities.value = cityList;
+    } catch (e) {
+      // Silently fail - locations are optional
+      cities.value = [];
+    } finally {
+      isLoadingCities.value = false;
+    }
+  }
+  
   void onGovernorateChanged(String? governorate) {
     selectedGovernorate.value = governorate ?? '';
     selectedCity.value = ''; // Reset city when governorate changes
+    cities.value = []; // Clear cities list
+    
+    // Load cities for selected governorate
+    if (governorate != null && governorate.isNotEmpty) {
+      loadCitiesForGovernorate(governorate);
+    }
+    
     currentPage.value = 1;
     loadApartments();
   }

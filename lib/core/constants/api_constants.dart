@@ -6,6 +6,8 @@ class ApiConstants {
   static const String login = '/auth/login';
   static const String logout = '/auth/logout';
   static const String me = '/auth/me';
+  static const String forgotPassword = '/auth/forgot-password';
+  static const String resetPassword = '/auth/reset-password';
   
   // Profile endpoints
   static const String profile = '/profile';
@@ -27,6 +29,10 @@ class ApiConstants {
   static const String userTransactions = '/admin/users';
   static const String allApartments = '/admin/apartments';
   static const String allBookings = '/admin/bookings';
+  
+  // Location endpoints
+  static const String governorates = '/locations/governorates';
+  static const String cities = '/locations/cities';
   
   // Notifications
   static const String notifications = '/notifications';
