@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -10,8 +11,19 @@ class NotificationPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final controller = Get.find<NotificationController>();
-      return Container(
+      try {
+        if (!Get.isRegistered<NotificationController>()) {
+          return _buildErrorWidget(context, 'Notification controller not initialized');
+        }
+        
+        final controller = Get.find<NotificationController>();
+        
+        // Double check controller is valid
+        if (!controller.isPanelOpen.value) {
+          return const SizedBox.shrink();
+        }
+        
+        return Container(
         width: 400,
         constraints: const BoxConstraints(maxHeight: 600),
         decoration: BoxDecoration(
@@ -41,6 +53,10 @@ class NotificationPanel extends StatelessWidget {
           ],
         ),
       );
+      } catch (e) {
+        // Return error widget instead of crashing
+        return _buildErrorWidget(context, e.toString());
+      }
     });
   }
 
@@ -266,12 +282,7 @@ class NotificationPanel extends StatelessWidget {
               onPressed: controller.isLoading.value
                   ? null
                   : () async {
-                      try {
-                        await controller.markAllAsRead();
-                      } catch (e) {
-                        // Error is already handled in controller
-                        print('Error marking all as read: $e');
-                      }
+                      await controller.markAllAsRead();
                     },
               child: controller.isLoading.value
                   ? const SizedBox(
@@ -285,8 +296,15 @@ class NotificationPanel extends StatelessWidget {
           const SizedBox(width: 8),
           TextButton(
             onPressed: () {
-              controller.closePanel();
-              Get.toNamed('/notifications');
+              try {
+                controller.closePanel();
+                // Use Future.microtask to ensure navigation happens after panel closes
+                Future.microtask(() {
+                  Get.toNamed('/notifications');
+                });
+              } catch (e) {
+                Get.snackbar('error'.tr, 'Unable to navigate to notifications page.');
+              }
             },
             child: Text('view_all'.tr),
           ),
@@ -326,6 +344,45 @@ class NotificationPanel extends StatelessWidget {
       default:
         return Colors.grey;
     }
+  }
+
+  Widget _buildErrorWidget(BuildContext context, String errorMessage) {
+    return Container(
+      width: 400,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.error_outline, color: Colors.red, size: 48),
+          const SizedBox(height: 16),
+          Text(
+            'Error loading notifications',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Please try again later',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          if (kDebugMode) ...[
+            const SizedBox(height: 8),
+            Text(
+              errorMessage,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.grey[600],
+                fontSize: 10,
+              ),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ],
+      ),
+    );
   }
 }
 

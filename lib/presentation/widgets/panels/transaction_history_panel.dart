@@ -71,7 +71,7 @@ class TransactionHistoryPanel extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Transaction History',
+                  'transaction_history'.tr,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -87,10 +87,10 @@ class TransactionHistoryPanel extends StatelessWidget {
               ],
             ),
           ),
-          IconButton(
+            IconButton(
             icon: const Icon(Icons.close, color: Colors.white),
             onPressed: () => controller.closeTransactionHistoryPanel(),
-            tooltip: 'Close',
+            tooltip: 'close'.tr,
           ),
         ],
       ),
@@ -115,9 +115,9 @@ class TransactionHistoryPanel extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Current Balance',
+                'current_balance'.tr,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
+                      color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.7),
                     ),
               ),
               const SizedBox(height: 4),
@@ -144,9 +144,9 @@ class TransactionHistoryPanel extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: Theme.of(context).scaffoldBackgroundColor,
         border: Border(
-          bottom: BorderSide(color: Colors.grey[300]!),
+          bottom: BorderSide(color: Theme.of(context).dividerColor),
         ),
       ),
       child: Row(
@@ -156,23 +156,23 @@ class TransactionHistoryPanel extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Colors.grey[300]!),
+                color: Theme.of(context).cardColor,
+                border: Border.all(color: Theme.of(context).dividerColor),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Obx(() => DropdownButton<String>(
                     value: controller.selectedTransactionType.value,
-                    items: const [
-                      DropdownMenuItem(value: 'all', child: Text('All Types')),
-                      DropdownMenuItem(value: 'deposit', child: Text('Deposits')),
-                      DropdownMenuItem(value: 'withdrawal', child: Text('Withdrawals')),
-                      DropdownMenuItem(value: 'rent_payment', child: Text('Rent Payments')),
-                      DropdownMenuItem(value: 'refund', child: Text('Refunds')),
-                      DropdownMenuItem(value: 'cancellation_fee', child: Text('Cancellation Fees')),
+                    items: [
+                      DropdownMenuItem(value: 'all', child: Text('all_types'.tr)),
+                      DropdownMenuItem(value: 'deposit', child: Text('deposits'.tr)),
+                      DropdownMenuItem(value: 'withdrawal', child: Text('withdrawals'.tr)),
+                      DropdownMenuItem(value: 'rent_payment', child: Text('rent_payments'.tr)),
+                      DropdownMenuItem(value: 'refund', child: Text('refunds'.tr)),
+                      DropdownMenuItem(value: 'cancellation_fee', child: Text('cancellation_fees'.tr)),
                     ],
                     onChanged: controller.onTransactionTypeFilterChanged,
                     underline: const SizedBox.shrink(),
-                    icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey[600]),
+                    icon: Icon(Icons.keyboard_arrow_down, color: Theme.of(context).iconTheme.color),
                     isExpanded: true,
                   )),
             ),
@@ -184,21 +184,21 @@ class TransactionHistoryPanel extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Colors.grey[300]!),
+                color: Theme.of(context).cardColor,
+                border: Border.all(color: Theme.of(context).dividerColor),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Obx(() => DropdownButton<String>(
                     value: controller.selectedDateRange.value,
-                    items: const [
-                      DropdownMenuItem(value: 'all', child: Text('All Time')),
-                      DropdownMenuItem(value: 'month', child: Text('This Month')),
-                      DropdownMenuItem(value: 'last_month', child: Text('Last Month')),
-                      DropdownMenuItem(value: '3months', child: Text('Last 3 Months')),
+                    items: [
+                      DropdownMenuItem(value: 'all', child: Text('all_time'.tr)),
+                      DropdownMenuItem(value: 'month', child: Text('this_month'.tr)),
+                      DropdownMenuItem(value: 'last_month', child: Text('last_month'.tr)),
+                      DropdownMenuItem(value: '3months', child: Text('last_3_months'.tr)),
                     ],
                     onChanged: controller.onDateRangeFilterChanged,
                     underline: const SizedBox.shrink(),
-                    icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey[600]),
+                    icon: Icon(Icons.keyboard_arrow_down, color: Theme.of(context).iconTheme.color),
                     isExpanded: true,
                   )),
             ),
@@ -224,16 +224,16 @@ class TransactionHistoryPanel extends StatelessWidget {
               Icon(Icons.receipt_long, size: 64, color: Colors.grey[400]),
               const SizedBox(height: 16),
               Text(
-                'No transactions found',
+                'no_transactions_found'.tr,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.grey[600],
+                      color: Theme.of(context).textTheme.titleMedium?.color?.withValues(alpha: 0.7),
                     ),
               ),
               const SizedBox(height: 8),
               Text(
-                'Transaction history will appear here',
+                'transaction_history_will_appear'.tr,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[500],
+                      color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
                     ),
               ),
             ],
@@ -274,9 +274,9 @@ class TransactionHistoryPanel extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: Theme.of(context).dividerColor),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -311,11 +311,12 @@ class TransactionHistoryPanel extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: Text(
+                      child:                       Text(
                         typeInfo['label'] as String,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
                         ),
                       ),
                     ),
@@ -335,7 +336,7 @@ class TransactionHistoryPanel extends StatelessWidget {
                     description,
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[600],
+                      color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.7),
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -344,10 +345,10 @@ class TransactionHistoryPanel extends StatelessWidget {
                 if (date != null) ...[
                   const SizedBox(height: 4),
                   Text(
-                    DateFormat('MMM dd, yyyy - HH:mm').format(date),
+                    DateFormat('MMM dd, yyyy - HH:mm', Get.locale?.toString() ?? 'en_US').format(date),
                     style: TextStyle(
                       fontSize: 11,
-                      color: Colors.grey[500],
+                      color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
@@ -360,7 +361,7 @@ class TransactionHistoryPanel extends StatelessWidget {
                       // TODO: Filter or highlight specific booking
                     },
                     child: Text(
-                      'Booking #$relatedBookingId',
+                      'booking_number'.tr.replaceAll('{id}', relatedBookingId.toString()),
                       style: TextStyle(
                         fontSize: 11,
                         color: Theme.of(context).colorScheme.primary,
@@ -381,37 +382,37 @@ class TransactionHistoryPanel extends StatelessWidget {
     switch (type) {
       case 'deposit':
         return {
-          'label': 'Deposit',
+          'label': 'deposits'.tr,
           'icon': Icons.add_circle,
           'color': Colors.green,
         };
       case 'withdrawal':
         return {
-          'label': 'Withdrawal',
+          'label': 'withdrawals'.tr,
           'icon': Icons.remove_circle,
           'color': Colors.orange,
         };
       case 'rent_payment':
         return {
-          'label': 'Rent Payment',
+          'label': 'rent_payments'.tr,
           'icon': Icons.payment,
           'color': Colors.blue,
         };
       case 'refund':
         return {
-          'label': 'Refund',
+          'label': 'refunds'.tr,
           'icon': Icons.undo,
           'color': Colors.green,
         };
       case 'cancellation_fee':
         return {
-          'label': 'Cancellation Fee',
+          'label': 'cancellation_fees'.tr,
           'icon': Icons.cancel,
           'color': Colors.red,
         };
       default:
         return {
-          'label': 'Transaction',
+          'label': 'transaction'.tr,
           'icon': Icons.receipt,
           'color': Colors.grey,
         };

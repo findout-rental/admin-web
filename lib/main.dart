@@ -8,6 +8,10 @@ import 'core/services/firebase_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  // Disable widget inspector overlay (prevents red dimension overlays)
+  WidgetsBinding.instance.deferFirstFrame();
+  WidgetsBinding.instance.allowFirstFrame();
+  
   // Error handling for Flutter web
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.presentError(details);

@@ -6,6 +6,7 @@ import 'package:image_picker_web/image_picker_web.dart';
 import '../../../domain/usecases/profile/get_profile_usecase.dart';
 import '../../../domain/usecases/profile/update_profile_usecase.dart';
 import '../../../domain/usecases/profile/upload_photo_usecase.dart';
+import '../../../core/constants/api_constants.dart';
 import '../../controllers/auth/auth_controller.dart';
 
 class ProfileController extends GetxController {
@@ -87,15 +88,26 @@ class ProfileController extends GetxController {
       final response = await uploadPhotoUsecase.execute(selectedPhoto.value!);
       final user = response['data']?['user'] as Map<String, dynamic>? ?? response;
       final newPhotoUrl = user['personal_photo'] as String? ?? '';
-      originalPhoto.value = newPhotoUrl;
+      
+      // Convert relative URL to full URL if needed
+      String fullPhotoUrl = newPhotoUrl;
+      if (newPhotoUrl.isNotEmpty && !newPhotoUrl.startsWith('http')) {
+        // If it's a relative path, prepend base URL (without /api)
+        final baseUrl = ApiConstants.baseUrl.replaceAll('/api', '');
+        fullPhotoUrl = newPhotoUrl.startsWith('/') 
+            ? '$baseUrl$newPhotoUrl' 
+            : '$baseUrl/$newPhotoUrl';
+      }
+      
+      originalPhoto.value = fullPhotoUrl;
       
       // Update auth controller
       final authController = Get.find<AuthController>();
       await authController.checkAuthStatus();
 
-      // Clear selected photo but keep the new URL visible
+      // Clear selected photo - the originalPhoto will now show the uploaded photo
       selectedPhoto.value = null;
-      selectedPhotoUrl.value = null; // This will make it use originalPhoto
+      selectedPhotoUrl.value = null;
 
       Get.snackbar('success'.tr, 'photo_updated_successfully'.tr);
     } catch (e) {

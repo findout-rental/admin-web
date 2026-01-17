@@ -17,16 +17,25 @@ class UserModel extends User {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    // Convert relative photo URLs to full URLs if needed
+    String convertPhotoUrl(String? url) {
+      if (url == null || url.isEmpty) return '';
+      if (url.startsWith('http')) return url;
+      // If relative path, prepend base URL
+      final baseUrl = 'http://localhost:8000';
+      return url.startsWith('/') ? '$baseUrl$url' : '$baseUrl/$url';
+    }
+
     return UserModel(
       id: json['id'] as int,
       mobileNumber: json['mobile_number'] as String,
       firstName: json['first_name'] as String,
       lastName: json['last_name'] as String,
-      personalPhoto: json['personal_photo'] as String? ?? '',
+      personalPhoto: convertPhotoUrl(json['personal_photo'] as String?),
       dateOfBirth: json['date_of_birth'] != null
           ? DateTime.parse(json['date_of_birth'] as String)
           : null,
-      idPhoto: json['id_photo'] as String?,
+      idPhoto: convertPhotoUrl(json['id_photo'] as String?),
       role: json['role'] as String,
       status: json['status'] as String,
       languagePreference: json['language_preference'] as String? ?? 'en',

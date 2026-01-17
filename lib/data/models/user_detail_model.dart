@@ -21,13 +21,22 @@ class UserDetailModel extends UserDetail {
     final data = json['data'] as Map<String, dynamic>? ?? json;
     final userData = data['user'] as Map<String, dynamic>? ?? data;
 
+    // Convert relative photo URLs to full URLs if needed
+    String? convertPhotoUrl(String? url) {
+      if (url == null || url.isEmpty) return null;
+      if (url.startsWith('http')) return url;
+      // If relative path, prepend base URL
+      final baseUrl = 'http://localhost:8000';
+      return url.startsWith('/') ? '$baseUrl$url' : '$baseUrl/$url';
+    }
+
     return UserDetailModel(
       id: userData['id'] as int,
       mobileNumber: userData['mobile_number'] as String,
       firstName: userData['first_name'] as String,
       lastName: userData['last_name'] as String,
-      personalPhoto: userData['personal_photo'] as String?,
-      idPhoto: userData['id_photo'] as String?,
+      personalPhoto: convertPhotoUrl(userData['personal_photo'] as String?),
+      idPhoto: convertPhotoUrl(userData['id_photo'] as String?),
       dateOfBirth: userData['date_of_birth'] != null
           ? DateTime.parse(userData['date_of_birth'] as String)
           : null,

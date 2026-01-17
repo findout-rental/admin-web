@@ -1,5 +1,6 @@
 import '../../../core/network/api_client.dart';
 import '../../../core/constants/api_constants.dart';
+import '../../../core/utils/phone_utils.dart';
 
 abstract class AuthRemoteDatasource {
   Future<Map<String, dynamic>> login(String mobileNumber, String password);
@@ -16,10 +17,13 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
 
   @override
   Future<Map<String, dynamic>> login(String mobileNumber, String password) async {
+    // Normalize Syrian phone number to +963 format
+    final normalizedMobile = PhoneUtils.normalizeSyrianPhone(mobileNumber);
+    
     final response = await apiClient.post(
       ApiConstants.login,
       data: {
-        'mobile_number': mobileNumber,
+        'mobile_number': normalizedMobile,
         'password': password,
       },
     );

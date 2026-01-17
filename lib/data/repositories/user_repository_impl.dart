@@ -63,6 +63,9 @@ class UserRepositoryImpl implements UserRepository {
   Future<UserDetail> getUserDetail(int userId) async {
     try {
       final response = await remoteDatasource.getUserDetail(userId);
+      // Handle response wrapper: {success: true, data: {user: {...}, statistics: {...}}}
+      // The model's fromJson handles extracting 'user' from 'data' if present
+      // So we pass the full response and let the model handle it
       return UserDetailModel.fromJson(response);
     } catch (e) {
       rethrow;

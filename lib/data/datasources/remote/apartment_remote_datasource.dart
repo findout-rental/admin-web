@@ -60,7 +60,7 @@ class ApartmentRemoteDatasourceImpl implements ApartmentRemoteDatasource {
 
   @override
   Future<Map<String, dynamic>> getApartmentDetail(int apartmentId) async {
-    final response = await apiClient.get('${ApiConstants.allApartments}/$apartmentId');
+    final response = await apiClient.get('${ApiConstants.apartmentDetail}/$apartmentId');
     return response.data as Map<String, dynamic>;
   }
 }

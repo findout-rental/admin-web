@@ -104,6 +104,11 @@ class NotificationController extends GetxController {
     }
   }
 
+  /// Public method to register FCM token (can be called from AuthController after login)
+  Future<void> registerFCMToken() async {
+    await _registerFCMToken();
+  }
+
   @override
   void onClose() {
     _pollingTimer?.cancel();
@@ -180,26 +185,9 @@ class NotificationController extends GetxController {
     try {
       await markAllReadUsecase.execute();
 
-      // Update local state
-      notifications.value = notifications.map((n) {
-        if (!n.isRead) {
-          return NotificationModel(
-            id: n.id,
-            userId: n.userId,
-            type: n.type,
-            title: n.title,
-            titleAr: n.titleAr,
-            message: n.message,
-            messageAr: n.messageAr,
-            bookingId: n.bookingId,
-            isRead: true,
-            createdAt: n.createdAt,
-          );
-        }
-        return n;
-      }).toList();
-
-      unreadCount.value = 0;
+      // Reload notifications and unread count from server to ensure consistency
+      await loadNotifications(showLoading: false);
+      await loadUnreadCount();
 
       Get.snackbar(
         'success'.tr,
@@ -219,8 +207,16 @@ class NotificationController extends GetxController {
   }
 
   void openPanel() {
-    isPanelOpen.value = true;
-    loadNotifications();
+    try {
+      isPanelOpen.value = true;
+      // Load notifications and unread count without blocking - errors are handled inside
+      loadNotifications();
+      loadUnreadCount();
+    } catch (e) {
+      AppLogger.error('Failed to open notification panel', error: e);
+      // Still set panel as open so user can see error state
+      isPanelOpen.value = true;
+    }
   }
 
   void closePanel() {
@@ -228,10 +224,15 @@ class NotificationController extends GetxController {
   }
 
   void togglePanel() {
-    if (isPanelOpen.value) {
-      closePanel();
-    } else {
-      openPanel();
+    try {
+      if (isPanelOpen.value) {
+        closePanel();
+      } else {
+        openPanel();
+      }
+    } catch (e) {
+      AppLogger.error('Failed to toggle notification panel', error: e);
+      Get.snackbar('error'.tr, 'Unable to toggle notifications. Please try again.');
     }
   }
 

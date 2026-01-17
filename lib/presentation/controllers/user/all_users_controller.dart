@@ -57,6 +57,18 @@ class AllUsersController extends GetxController {
   void onInit() {
     super.onInit();
     loadUsers();
+    
+    // Check if a user ID was passed via navigation arguments
+    final args = Get.arguments as Map<String, dynamic>?;
+    if (args != null && args.containsKey('selectUserId')) {
+      final userId = args['selectUserId'] as int?;
+      if (userId != null) {
+        // Wait a bit for users to load, then select the user
+        Future.delayed(const Duration(milliseconds: 500), () {
+          selectUser(userId);
+        });
+      }
+    }
   }
 
   Future<void> loadUsers({bool showLoading = true}) async {

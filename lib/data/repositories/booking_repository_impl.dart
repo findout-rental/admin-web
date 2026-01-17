@@ -50,7 +50,9 @@ class BookingRepositoryImpl implements BookingRepository {
   @override
   Future<Map<String, dynamic>> getBookingDetail(int bookingId) async {
     try {
-      return await remoteDatasource.getBookingDetail(bookingId);
+      final response = await remoteDatasource.getBookingDetail(bookingId);
+      // Handle response wrapper: {success: true, data: {...}} or direct {...}
+      return response['data'] as Map<String, dynamic>? ?? response;
     } catch (e) {
       rethrow;
     }

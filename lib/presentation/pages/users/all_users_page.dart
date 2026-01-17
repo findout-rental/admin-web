@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -12,6 +13,8 @@ import '../../controllers/user/all_users_controller.dart';
 import '../../widgets/layout/app_scaffold.dart';
 import '../../widgets/layout/breadcrumb.dart';
 import '../../widgets/panels/transaction_history_panel.dart';
+import '../../widgets/dialogs/send_message_dialog.dart';
+import 'user_full_profile_page.dart';
 
 class AllUsersPage extends StatelessWidget {
   const AllUsersPage({super.key});
@@ -188,7 +191,7 @@ class AllUsersPage extends StatelessWidget {
           TextField(
             onChanged: controller.onSearchChanged,
             decoration: InputDecoration(
-              hintText: 'Search users...',
+              hintText: 'search_users'.tr,
               prefixIcon: const Icon(Icons.search),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -426,14 +429,10 @@ class AllUsersPage extends StatelessWidget {
             child: InkWell(
               onTap: () => controller.selectUser(user.id),
               child: ListTile(
-                leading: CircleAvatar(
+                leading: _buildPhotoAvatar(
                   radius: 24,
-                  backgroundImage: user.personalPhoto.isNotEmpty
-                      ? NetworkImage(user.personalPhoto)
-                      : null,
-                  child: user.personalPhoto.isEmpty
-                      ? const Icon(Icons.person)
-                      : null,
+                  photoUrl: user.personalPhoto.isNotEmpty ? user.personalPhoto : null,
+                  iconSize: 24,
                 ),
                 title: Text(
                   user.fullName,
@@ -455,7 +454,7 @@ class AllUsersPage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            user.role.toUpperCase(),
+                            user.role == 'tenant' ? 'tenant_role'.tr : 'owner_role'.tr,
                             style: TextStyle(
                               color: user.role == 'tenant' ? Colors.blue : Colors.green,
                               fontSize: 10,
@@ -582,21 +581,21 @@ class AllUsersPage extends StatelessWidget {
           // Personal Information
           _buildSection(
             context,
-            'Personal Information',
+            'personal_information'.tr,
             [
-              _buildInfoRow(context, 'Mobile Number', detail.mobileNumber),
+              _buildInfoRow(context, 'mobile_number'.tr, detail.mobileNumber),
               if (detail.dateOfBirth != null)
                 _buildInfoRow(
                   context,
-                  'Date of Birth',
-                  '${DateFormat('MMM dd, yyyy').format(detail.dateOfBirth!)} (${_calculateAge(detail.dateOfBirth!)} years old)',
+                  'date_of_birth'.tr,
+                  '${DateFormat('MMM dd, yyyy', Get.locale?.toString() ?? 'en_US').format(detail.dateOfBirth!)} (${_calculateAge(detail.dateOfBirth!)} ${'years_old'.tr})',
                 ),
-              _buildInfoRow(context, 'Role', detail.role.toUpperCase()),
-              _buildInfoRow(context, 'Status', detail.status.toUpperCase()),
+              _buildInfoRow(context, 'role'.tr, detail.role == 'tenant' ? 'tenant_role'.tr : 'owner_role'.tr),
+              _buildInfoRow(context, 'status'.tr, detail.status.toUpperCase()),
               _buildInfoRow(
                 context,
-                'Registration Date',
-                DateFormat('MMM dd, yyyy').format(detail.createdAt),
+                'registration_date'.tr,
+                DateFormat('MMM dd, yyyy', Get.locale?.toString() ?? 'en_US').format(detail.createdAt),
               ),
             ],
           ),
@@ -606,7 +605,7 @@ class AllUsersPage extends StatelessWidget {
           if (detail.idPhoto != null)
             _buildSection(
               context,
-              'Identity Verification',
+              'identity_verification'.tr,
               [
                 InkWell(
                   onTap: () => _showImageDialog(context, detail.idPhoto!),
@@ -652,14 +651,10 @@ class AllUsersPage extends StatelessWidget {
   Widget _buildDetailHeader(BuildContext context, UserDetail detail) {
     return Column(
       children: [
-        CircleAvatar(
+        _buildPhotoAvatar(
           radius: 60,
-          backgroundImage: detail.personalPhoto != null && detail.personalPhoto!.isNotEmpty
-              ? NetworkImage(detail.personalPhoto!)
-              : null,
-          child: detail.personalPhoto == null || detail.personalPhoto!.isEmpty
-              ? const Icon(Icons.person, size: 60)
-              : null,
+          photoUrl: detail.personalPhoto,
+          iconSize: 60,
         ),
         const SizedBox(height: 16),
         Text(
@@ -681,7 +676,7 @@ class AllUsersPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                detail.role.toUpperCase(),
+                detail.role == 'tenant' ? 'tenant_role'.tr : 'owner_role'.tr,
                 style: TextStyle(
                   color: detail.role == 'tenant' ? Colors.blue : Colors.green,
                   fontWeight: FontWeight.bold,
@@ -894,14 +889,19 @@ class AllUsersPage extends StatelessWidget {
           children: [
             OutlinedButton(
               onPressed: () {
-                Get.snackbar('info'.tr, 'view_full_profile_coming_soon'.tr);
+                Get.to(() => UserFullProfilePage(userDetail: detail));
               },
               child: Text('view_full_profile'.tr),
             ),
             const SizedBox(width: 8),
             OutlinedButton(
               onPressed: () {
-                Get.snackbar('info'.tr, 'send_message_coming_soon'.tr);
+                Get.dialog(
+                  SendMessageDialog(
+                    recipientId: detail.id,
+                    recipientName: detail.fullName,
+                  ),
+                );
               },
               child: Text('send_message'.tr),
             ),
@@ -964,7 +964,7 @@ class AllUsersPage extends StatelessWidget {
               controller: amountController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                labelText: 'amount_egp'.tr,
+                labelText: 'amount_syp'.tr,
                 border: const OutlineInputBorder(),
                 prefixText: 'SYP ',
               ),
@@ -1030,7 +1030,7 @@ class AllUsersPage extends StatelessWidget {
               controller: amountController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                labelText: 'amount_egp'.tr,
+                labelText: 'amount_syp'.tr,
                 border: const OutlineInputBorder(),
                 prefixText: 'SYP ',
               ),
@@ -1110,7 +1110,7 @@ class AllUsersPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(detail.fullName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    Text(detail.role.toUpperCase()),
+                    Text(detail.role == 'tenant' ? 'tenant_role'.tr : 'owner_role'.tr),
                   ],
                 ),
               ],
@@ -1167,6 +1167,30 @@ class AllUsersPage extends StatelessWidget {
               )),
         ],
       ),
+    );
+  }
+
+  Widget _buildPhotoAvatar({
+    required double radius,
+    required String? photoUrl,
+    required double iconSize,
+  }) {
+    if (photoUrl == null || photoUrl.isEmpty) {
+      return CircleAvatar(
+        radius: radius,
+        child: Icon(Icons.person, size: iconSize),
+      );
+    }
+
+    return CircleAvatar(
+      radius: radius,
+      backgroundImage: NetworkImage(photoUrl),
+      onBackgroundImageError: (exception, stackTrace) {
+        debugPrint('Failed to load user photo: $photoUrl - $exception');
+      },
+      child: photoUrl.isEmpty
+          ? Icon(Icons.person, size: iconSize)
+          : null,
     );
   }
 }

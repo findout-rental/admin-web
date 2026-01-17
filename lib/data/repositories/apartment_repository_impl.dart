@@ -50,7 +50,9 @@ class ApartmentRepositoryImpl implements ApartmentRepository {
   @override
   Future<Map<String, dynamic>> getApartmentDetail(int apartmentId) async {
     try {
-      return await remoteDatasource.getApartmentDetail(apartmentId);
+      final response = await remoteDatasource.getApartmentDetail(apartmentId);
+      // Handle response wrapper: {success: true, data: {...}} or direct {...}
+      return response['data'] as Map<String, dynamic>? ?? response;
     } catch (e) {
       rethrow;
     }

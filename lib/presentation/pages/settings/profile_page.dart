@@ -210,7 +210,7 @@ class ProfilePage extends StatelessWidget {
                 _buildInfoRow(
                   context,
                   'role'.tr,
-                  user.role.toUpperCase(),
+                  user.role == 'tenant' ? 'tenant_role'.tr : 'owner_role'.tr,
                   isReadOnly: true,
                 ),
                 const SizedBox(height: 8),

@@ -129,8 +129,17 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
             if (showNotificationIcon)
               Obx(() {
                 try {
-                  final notificationController =
-                      Get.find<NotificationController>();
+                  if (!Get.isRegistered<NotificationController>()) {
+                    return IconButton(
+                      icon: const Icon(Icons.notifications_outlined),
+                      onPressed: () {
+                        Get.snackbar('info'.tr, 'notifications_coming_soon'.tr);
+                      },
+                      tooltip: 'notifications'.tr,
+                    );
+                  }
+                  
+                  final notificationController = Get.find<NotificationController>();
                   final unreadCount = notificationController.unreadCount.value;
 
                   return Stack(
@@ -139,7 +148,11 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
                       IconButton(
                         icon: const Icon(Icons.notifications_outlined),
                         onPressed: () {
-                          notificationController.togglePanel();
+                          try {
+                            notificationController.togglePanel();
+                          } catch (e) {
+                            Get.snackbar('error'.tr, 'Unable to open notifications. Please try again.');
+                          }
                         },
                         tooltip: 'Notifications',
                       ),

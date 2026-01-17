@@ -6,6 +6,7 @@ import '../../presentation/pages/legal/terms_of_service_page.dart';
 import '../../presentation/pages/dashboard/dashboard_page.dart';
 import '../../presentation/pages/pending_registrations/pending_registrations_page.dart';
 import '../../presentation/pages/users/all_users_page.dart';
+import '../../presentation/pages/users/user_full_profile_page.dart';
 import '../../presentation/pages/apartments/all_apartments_page.dart';
 import '../../presentation/pages/bookings/all_bookings_page.dart';
 import '../../presentation/pages/settings/profile_page.dart';
@@ -50,6 +51,14 @@ class AppPages {
     GetPage(
       name: '/users',
       page: () => const AllUsersPage(),
+    ),
+    GetPage(
+      name: '/users/:userId/profile',
+      page: () {
+        // This will be handled by navigation with arguments
+        final userDetail = Get.arguments as dynamic;
+        return UserFullProfilePage(userDetail: userDetail);
+      },
     ),
     GetPage(
       name: '/apartments',

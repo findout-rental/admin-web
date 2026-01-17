@@ -16,6 +16,9 @@ class App extends StatelessWidget {
     return GetMaterialApp(
       title: 'FindOut Admin',
       debugShowCheckedModeBanner: false,
+      showPerformanceOverlay: false,
+      checkerboardOffscreenLayers: false,
+      checkerboardRasterCacheImages: false,
       
       // Enable logging for debugging
       logWriterCallback: (text, {bool? isError}) {

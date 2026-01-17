@@ -90,7 +90,7 @@ class PendingRegistrationsPage extends StatelessWidget {
                     ),
                     child: Text(
                       '$count',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
                         fontSize: 12,
@@ -160,7 +160,7 @@ class PendingRegistrationsPage extends StatelessWidget {
                         onChanged: controller.onRoleFilterChanged,
                         underline: const SizedBox.shrink(),
                         icon: Icon(Icons.keyboard_arrow_down,
-                            color: Colors.grey[600]),
+                            color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6)),
                         style: Theme.of(context).textTheme.bodyMedium,
                         isExpanded: true,
                       )),
@@ -190,7 +190,7 @@ class PendingRegistrationsPage extends StatelessWidget {
                         onChanged: controller.onSortChanged,
                         underline: const SizedBox.shrink(),
                         icon: Icon(Icons.keyboard_arrow_down,
-                            color: Colors.grey[600]),
+                            color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6)),
                         style: Theme.of(context).textTheme.bodyMedium,
                         isExpanded: true,
                       )),
@@ -206,12 +206,12 @@ class PendingRegistrationsPage extends StatelessWidget {
                             height: 18,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : Icon(Icons.refresh, color: Colors.grey[700]),
+                        : Icon(Icons.refresh, color: Theme.of(context).iconTheme.color),
                     onPressed:
                         controller.isLoading.value ? null : controller.refresh,
                     tooltip: 'refresh'.tr,
                     style: IconButton.styleFrom(
-                      backgroundColor: Colors.grey[100],
+                      backgroundColor: Theme.of(context).cardColor,
                       padding: const EdgeInsets.all(10),
                     ),
                   )),
@@ -229,15 +229,16 @@ class PendingRegistrationsPage extends StatelessWidget {
       itemBuilder: (context, index) {
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
+          color: Theme.of(context).cardColor,
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: Colors.grey[300],
+              backgroundColor: Theme.of(context).dividerColor,
             ),
             title: Container(
               height: 16,
               width: 200,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: Theme.of(context).dividerColor,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -246,7 +247,7 @@ class PendingRegistrationsPage extends StatelessWidget {
               height: 12,
               width: 150,
               decoration: BoxDecoration(
-                color: Colors.grey[200],
+                color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -265,7 +266,7 @@ class PendingRegistrationsPage extends StatelessWidget {
           Icon(
             Icons.check_circle_outline,
             size: 80,
-            color: Colors.grey[400],
+            color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.4),
           ),
           const SizedBox(height: 24),
           Text(
@@ -278,7 +279,7 @@ class PendingRegistrationsPage extends StatelessWidget {
           Text(
             'no_pending_registrations'.tr,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey[600],
+                  color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.6),
                 ),
           ),
         ],
@@ -313,16 +314,19 @@ class PendingRegistrationsPage extends StatelessWidget {
   Widget _buildRegistrationCard(BuildContext context,
       PendingRegistrationsController controller, PendingRegistration reg) {
     return InkWell(
-      onTap: () => Get.toNamed('/registration-detail/${reg.id}'),
+      onTap: () {
+        // Navigate to users page and select this user
+        Get.toNamed('/users', arguments: {'selectUserId': reg.id});
+      },
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: Theme.of(context).shadowColor.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -338,7 +342,7 @@ class PendingRegistrationsPage extends StatelessWidget {
                       ? NetworkImage(reg.personalPhoto!)
                       : null,
               child: reg.personalPhoto == null || reg.personalPhoto!.isEmpty
-                  ? Icon(Icons.person, size: 28, color: Colors.grey[600])
+                  ? Icon(Icons.person, size: 28, color: Theme.of(context).iconTheme.color?.withValues(alpha: 0.6))
                   : null,
             ),
             const SizedBox(width: 16),
@@ -351,17 +355,15 @@ class PendingRegistrationsPage extends StatelessWidget {
                 children: [
                   Text(
                     reg.fullName,
-                    style: const TextStyle(
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
-                      fontSize: 15,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     reg.mobileNumber,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey[600],
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
@@ -381,7 +383,7 @@ class PendingRegistrationsPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  reg.role.toUpperCase(),
+                  reg.role == 'tenant' ? 'tenant_role'.tr : 'owner_role'.tr,
                   style: TextStyle(
                     color: reg.role == 'tenant' ? Colors.blue : Colors.green,
                     fontWeight: FontWeight.w600,
@@ -396,10 +398,10 @@ class PendingRegistrationsPage extends StatelessWidget {
             // Date
             Expanded(
               flex: 2,
-              child: Text(
-                DateFormat('MMM dd, yyyy').format(reg.createdAt),
-                style: const TextStyle(fontSize: 13),
-              ),
+              child:                   Text(
+                    DateFormat('MMM dd, yyyy', Get.locale?.toString() ?? 'en_US').format(reg.createdAt),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
             ),
 
             // Status
@@ -466,11 +468,11 @@ class PendingRegistrationsPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       margin: const EdgeInsets.only(top: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Theme.of(context).shadowColor.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -517,7 +519,9 @@ class PendingRegistrationsPage extends StatelessWidget {
                           ? Theme.of(context).colorScheme.primary
                           : null,
                       foregroundColor:
-                          page == pagination.currentPage ? Colors.white : null,
+                          page == pagination.currentPage 
+                              ? Theme.of(context).colorScheme.onPrimary 
+                              : null,
                     ),
                     child: Text(page.toString()),
                   );
@@ -556,7 +560,7 @@ class PendingRegistrationsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('${'name'.tr}: ${registration.fullName}'),
-            Text('${'role'.tr}: ${registration.role.toUpperCase()}'),
+            Text('${'role'.tr}: ${registration.role == 'tenant' ? 'tenant_role'.tr : 'owner_role'.tr}'),
             Text('${'mobile'.tr}: ${registration.mobileNumber}'),
             const SizedBox(height: 16),
             Text('user_will_be_notified_and_access'.tr),
@@ -599,7 +603,7 @@ class PendingRegistrationsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('${'name'.tr}: ${registration.fullName}'),
-            Text('${'role'.tr}: ${registration.role.toUpperCase()}'),
+            Text('${'role'.tr}: ${registration.role == 'tenant' ? 'tenant_role'.tr : 'owner_role'.tr}'),
             Text('${'mobile'.tr}: ${registration.mobileNumber}'),
             const SizedBox(height: 16),
             TextField(
@@ -615,7 +619,9 @@ class PendingRegistrationsPage extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'user_will_be_notified'.tr,
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
+              ),
             ),
           ],
         ),

@@ -23,20 +23,49 @@ class ApartmentModel extends Apartment {
   factory ApartmentModel.fromJson(Map<String, dynamic> json) {
     final owner = json['owner'] as Map<String, dynamic>? ?? {};
     
+    // Backend sends nightly_price and monthly_price as formatted strings
+    // Use nightly_price as default price, or monthly_price if nightly is not available
+    final nightlyPriceStr = json['nightly_price'] as String?;
+    final monthlyPriceStr = json['monthly_price'] as String?;
+    double? price;
+    String? pricePeriod;
+    
+    if (nightlyPriceStr != null) {
+      // Remove formatting (commas) and parse
+      final cleaned = nightlyPriceStr.replaceAll(',', '');
+      price = double.tryParse(cleaned);
+      pricePeriod = 'nightly';
+    } else if (monthlyPriceStr != null) {
+      final cleaned = monthlyPriceStr.replaceAll(',', '');
+      price = double.tryParse(cleaned);
+      pricePeriod = 'monthly';
+    }
+    
+    // Get first photo as main photo
+    final photosList = json['photos'] as List<dynamic>? ?? [];
+    final mainPhoto = photosList.isNotEmpty ? photosList.first as String? : null;
+    
+    // Convert relative photo URLs to full URLs if needed
+    String? convertPhotoUrl(String? url) {
+      if (url == null || url.isEmpty) return null;
+      if (url.startsWith('http')) return url;
+      // If relative path, prepend base URL
+      final baseUrl = 'http://localhost:8000';
+      return url.startsWith('/') ? '$baseUrl$url' : '$baseUrl/$url';
+    }
+    
     return ApartmentModel(
       id: json['id'] as int,
-      address: json['address'] as String? ?? 'N/A',
+      address: json['address'] as String? ?? json['address_ar'] as String? ?? 'N/A',
       governorate: json['governorate'] as String?,
       city: json['city'] as String?,
-      price: json['price'] != null
-          ? (json['price'] is String
-              ? double.tryParse(json['price'] as String)
-              : (json['price'] as num?)?.toDouble())
-          : null,
-      pricePeriod: json['price_period'] as String?,
+      price: price,
+      pricePeriod: pricePeriod,
       status: json['status'] as String? ?? 'inactive',
       averageRating: json['average_rating'] != null
-          ? (json['average_rating'] as num).toDouble()
+          ? (json['average_rating'] is String
+              ? double.tryParse((json['average_rating'] as String).replaceAll(',', ''))
+              : (json['average_rating'] as num?)?.toDouble())
           : null,
       totalRatings: json['total_ratings'] as int?,
       totalBookings: json['total_bookings'] as int? ?? 0,
@@ -44,15 +73,13 @@ class ApartmentModel extends Apartment {
           ? DateTime.parse(json['created_at'] as String)
           : DateTime.now(),
       ownerId: owner['id'] as int? ?? json['owner_id'] as int? ?? 0,
-      ownerName: owner['name'] as String? ??
-          '${owner['first_name'] ?? ''} ${owner['last_name'] ?? ''}'.trim(),
-      ownerPhoto: owner['personal_photo'] as String?,
-      mainPhoto: json['main_photo'] as String? ??
-          (json['photos'] != null && (json['photos'] as List<dynamic>).isNotEmpty
-              ? (json['photos'] as List<dynamic>).first as String?
-              : null),
-      photos: json['photos'] != null
-          ? (json['photos'] as List<dynamic>).cast<String>()
+      ownerName: '${owner['first_name'] ?? ''} ${owner['last_name'] ?? ''}'.trim().isEmpty
+          ? 'N/A'
+          : '${owner['first_name'] ?? ''} ${owner['last_name'] ?? ''}'.trim(),
+      ownerPhoto: convertPhotoUrl(owner['personal_photo'] as String?),
+      mainPhoto: convertPhotoUrl(mainPhoto),
+      photos: photosList.isNotEmpty
+          ? photosList.map((p) => convertPhotoUrl(p as String?)).whereType<String>().toList()
           : null,
     );
   }

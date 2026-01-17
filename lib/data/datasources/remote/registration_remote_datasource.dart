@@ -31,6 +31,7 @@ class RegistrationRemoteDatasourceImpl
     final queryParams = <String, dynamic>{
       'page': page,
       'per_page': perPage,
+      'status': 'pending', // Filter for pending registrations only
     };
 
     if (search != null && search.isNotEmpty) {
@@ -47,7 +48,15 @@ class RegistrationRemoteDatasourceImpl
       ApiConstants.pendingRegistrations,
       queryParameters: queryParams,
     );
-    return response.data as Map<String, dynamic>;
+    final data = response.data as Map<String, dynamic>;
+    // Transform response: backend returns 'users' but frontend expects 'registrations'
+    if (data.containsKey('data') && data['data'] is Map) {
+      final responseData = data['data'] as Map<String, dynamic>;
+      if (responseData.containsKey('users')) {
+        responseData['registrations'] = responseData['users'];
+      }
+    }
+    return data;
   }
 
   @override

@@ -60,7 +60,7 @@ class BookingRemoteDatasourceImpl implements BookingRemoteDatasource {
 
   @override
   Future<Map<String, dynamic>> getBookingDetail(int bookingId) async {
-    final response = await apiClient.get('${ApiConstants.allBookings}/$bookingId');
+    final response = await apiClient.get('${ApiConstants.bookingDetail}/$bookingId');
     return response.data as Map<String, dynamic>;
   }
 }

@@ -3,6 +3,7 @@ import 'package:get_storage/get_storage.dart';
 import '../../../core/constants/storage_keys.dart';
 import '../../../domain/entities/user.dart';
 import '../../../domain/repositories/auth_repository.dart';
+import '../notification/notification_controller.dart';
 
 class AuthController extends GetxController {
   final AuthRepository authRepository;
@@ -51,9 +52,43 @@ class AuthController extends GetxController {
       final user = await authRepository.login(mobileNumber, password);
       _currentUser.value = user;
       _isAuthenticated.value = true;
+      
+      // Register FCM token after successful login
+      _registerFCMTokenAfterLogin();
+      
+      // Initialize notification controller if available
+      _initializeNotificationController();
+      
       return true;
     } catch (e) {
       return false;
+    }
+  }
+
+  Future<void> _registerFCMTokenAfterLogin() async {
+    try {
+      // Wait a bit for Firebase to initialize if needed
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      // Get notification controller if it exists
+      try {
+        final notificationController = Get.find<NotificationController>();
+        // Trigger FCM token registration
+        notificationController.registerFCMToken();
+      } catch (e) {
+        // Notification controller not initialized yet, it will register in onInit
+      }
+    } catch (e) {
+      // Silently fail - FCM token registration is optional
+    }
+  }
+
+  void _initializeNotificationController() {
+    try {
+      // Ensure NotificationController is initialized
+      Get.find<NotificationController>();
+    } catch (e) {
+      // Controller will be lazy-loaded when needed
     }
   }
 

@@ -699,8 +699,7 @@ class AllApartmentsPage extends StatelessWidget {
 
   Widget _buildDetailContent(
       BuildContext context, Map<String, dynamic> detail) {
-    final apartment =
-        detail['data']?['apartment'] as Map<String, dynamic>? ?? detail;
+    final apartment = detail['data'] as Map<String, dynamic>? ?? detail;
     final owner = apartment['owner'] as Map<String, dynamic>? ?? {};
     final photos = apartment['photos'] as List<dynamic>? ?? [];
 
@@ -714,13 +713,20 @@ class AllApartmentsPage extends StatelessWidget {
             child: PageView.builder(
               itemCount: photos.length,
               itemBuilder: (context, index) {
+                final photoUrl = photos[index] as String;
+                final fullUrl = photoUrl.startsWith('http') 
+                    ? photoUrl 
+                    : (photoUrl.startsWith('/') 
+                        ? 'http://localhost:8000$photoUrl' 
+                        : 'http://localhost:8000/$photoUrl');
                 return Container(
                   margin: const EdgeInsets.only(bottom: 8),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     image: DecorationImage(
-                      image: NetworkImage(photos[index] as String),
+                      image: NetworkImage(fullUrl),
                       fit: BoxFit.cover,
+                      onError: (exception, stackTrace) {},
                     ),
                   ),
                 );
@@ -752,7 +758,7 @@ class AllApartmentsPage extends StatelessWidget {
               CircleAvatar(
                 radius: 24,
                 backgroundImage: owner['personal_photo'] != null
-                    ? NetworkImage(owner['personal_photo'] as String)
+                    ? NetworkImage(_convertPhotoUrl(owner['personal_photo'] as String))
                     : null,
                 child: owner['personal_photo'] == null
                     ? const Icon(Icons.person)
@@ -815,7 +821,7 @@ class AllApartmentsPage extends StatelessWidget {
         if (apartment['average_rating'] != null)
           _buildInfoRow(
             'average_rating'.tr,
-            '⭐ ${(apartment['average_rating'] as num).toStringAsFixed(1)}',
+            '⭐ ${_parseRating(apartment['average_rating']).toStringAsFixed(1)}',
           ),
         _buildInfoRow(
           'Created Date',
@@ -862,5 +868,22 @@ class AllApartmentsPage extends StatelessWidget {
         ],
       ),
     );
+  }
+  
+  static String _convertPhotoUrl(String url) {
+    if (url.startsWith('http')) return url;
+    return url.startsWith('/') 
+        ? 'http://localhost:8000$url' 
+        : 'http://localhost:8000/$url';
+  }
+  
+  static double _parseRating(dynamic rating) {
+    if (rating == null) return 0.0;
+    if (rating is num) return rating.toDouble();
+    if (rating is String) {
+      final cleaned = rating.replaceAll(',', '');
+      return double.tryParse(cleaned) ?? 0.0;
+    }
+    return 0.0;
   }
 }

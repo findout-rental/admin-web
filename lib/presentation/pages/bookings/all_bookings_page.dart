@@ -660,7 +660,9 @@ class AllBookingsPage extends StatelessWidget {
   }
 
   Widget _buildDetailContent(BuildContext context, Map<String, dynamic> detail) {
-    final booking = detail['data']?['booking'] as Map<String, dynamic>? ?? detail;
+    // Backend returns: {success: true, data: {booking data directly}}
+    // So detail is already the booking data, or it's in detail['data']
+    final booking = detail['id'] != null ? detail : (detail['data'] as Map<String, dynamic>? ?? {});
     final tenant = booking['tenant'] as Map<String, dynamic>? ?? {};
     final apartment = booking['apartment'] as Map<String, dynamic>? ?? {};
     final owner = apartment['owner'] as Map<String, dynamic>? ?? booking['owner'] as Map<String, dynamic>? ?? {};
@@ -684,12 +686,17 @@ class AllBookingsPage extends StatelessWidget {
               CircleAvatar(
                 radius: 20,
                 backgroundImage: tenant['personal_photo'] != null
-                    ? NetworkImage(tenant['personal_photo'] as String)
+                    ? NetworkImage(_convertPhotoUrl(tenant['personal_photo'] as String))
                     : null,
                 child: tenant['personal_photo'] == null ? const Icon(Icons.person) : null,
               ),
               const SizedBox(width: 12),
-              Text(tenant['name'] as String? ?? 'N/A', style: const TextStyle(fontWeight: FontWeight.w500)),
+              Text(
+                '${tenant['first_name'] ?? ''} ${tenant['last_name'] ?? ''}'.trim().isEmpty
+                    ? 'N/A'
+                    : '${tenant['first_name'] ?? ''} ${tenant['last_name'] ?? ''}'.trim(),
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
             ],
           ),
         ),
@@ -713,7 +720,12 @@ class AllBookingsPage extends StatelessWidget {
                 child: owner['personal_photo'] == null ? const Icon(Icons.person) : null,
               ),
               const SizedBox(width: 12),
-              Text(owner['name'] as String? ?? 'N/A', style: const TextStyle(fontWeight: FontWeight.w500)),
+              Text(
+                '${owner['first_name'] ?? ''} ${owner['last_name'] ?? ''}'.trim().isEmpty
+                    ? 'N/A'
+                    : '${owner['first_name'] ?? ''} ${owner['last_name'] ?? ''}'.trim(),
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
             ],
           ),
         ),
@@ -791,5 +803,12 @@ class AllBookingsPage extends StatelessWidget {
         Text(value, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13, color: Theme.of(context).textTheme.bodyMedium?.color)),
       ],
     );
+  }
+  
+  static String _convertPhotoUrl(String url) {
+    if (url.startsWith('http')) return url;
+    return url.startsWith('/') 
+        ? 'http://localhost:8000$url' 
+        : 'http://localhost:8000/$url';
   }
 }
